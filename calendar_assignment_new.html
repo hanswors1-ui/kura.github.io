@@ -142,6 +142,38 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .month-navigation {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .month-navigation button {
+            min-width: 120px;
+            font-weight: 600;
+        }
+
+        .month-navigation #currentMonth {
+            min-width: 200px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
         }
 
         .modal {
@@ -203,10 +235,19 @@
             color: white;
             border: none;
             border-radius: 4px;
+            transition: all 0.3s ease;
+            font-weight: 500;
         }
 
         button:hover {
-            background-color: #45a049;
+            filter: brightness(0.9);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
 
         table {
@@ -602,23 +643,23 @@
         <h1 data-i18n="title">Medical Shift Planner</h1>
 
         <div class="controls">
-            <div>
-                <button onclick="previousMonth()" data-i18n="previousMonth">Previous Month</button>
-                <span id="currentMonth" style="margin: 0 10px; font-weight: bold;"></span>
-                <button onclick="nextMonth()" data-i18n="nextMonth">Next Month</button>
+            <div class="month-navigation">
+                <button onclick="previousMonth()" data-i18n="previousMonth" style="background-color: #607D8B;">◀ Previous</button>
+                <span id="currentMonth"></span>
+                <button onclick="nextMonth()" data-i18n="nextMonth" style="background-color: #607D8B;">Next ▶</button>
             </div>
-            <div>
-                <button onclick="showStaffModal()" data-i18n="manageStaff">Manage Staff</button>
-                <button onclick="showLeaveModal()" data-i18n="manageLeave">Manage Leave</button>
-                <button onclick="showAssignmentModal()" data-i18n="assignShifts">Assign Shifts</button>
+            <div class="action-buttons">
+                <button onclick="showStaffModal()" data-i18n="manageStaff" style="background-color: #4CAF50;">👥 Manage Staff</button>
+                <button onclick="showLeaveModal()" data-i18n="manageLeave" style="background-color: #FFC107; color: #333;">🏖️ Manage Leave</button>
+                <button onclick="showAssignmentModal()" data-i18n="assignShifts" style="background-color: #3F51B5;">📋 Assign Shifts</button>
                 <button onclick="showShiftSwapModal()" data-i18n="shiftSwap" style="background-color: #9C27B0;">🔄 Shift Swap</button>
                 <button onclick="showAvailabilityModal()" data-i18n="staffAvailability" style="background-color: #00BCD4;">📊 Availability</button>
                 <button onclick="showStatsModal()" data-i18n="workStats" style="background-color: #673AB7;">📈 Stats</button>
-                <button onclick="showFilterModal()" data-i18n="filterView">Filter View</button>
+                <button onclick="showFilterModal()" data-i18n="filterView" style="background-color: #009688;">🔍 Filter View</button>
                 <button onclick="printCalendar()" data-i18n="printCalendar" style="background-color: #FF9800;">🖨️ Print</button>
-                <button onclick="exportData()" data-i18n="exportData">Export Data</button>
-                <button onclick="document.getElementById('importFile').click();" data-i18n="importData">Import Data</button>
-                <button onclick="toggleLanguage()" id="langToggle" style="background-color: #2196F3;">EN/PL</button>
+                <button onclick="exportData()" data-i18n="exportData" style="background-color: #795548;">💾 Export Data</button>
+                <button onclick="document.getElementById('importFile').click();" data-i18n="importData" style="background-color: #8BC34A;">📂 Import Data</button>
+                <button onclick="toggleLanguage()" id="langToggle" style="background-color: #2196F3;">🌐 EN/PL</button>
             </div>
         </div>
 
