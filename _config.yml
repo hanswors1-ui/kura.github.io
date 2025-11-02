@@ -1,0 +1,19 @@
+# Site settings
+title: Medical Shift Planner
+description: A comprehensive web-based shift planning application for medical facilities
+baseurl: "" # Leave empty for user page (username.github.io)
+url: "https://hanswors1-ui.github.io" # Your GitHub Pages URL
+
+# Jekyll settings
+markdown: kramdown
+theme: minima # Default GitHub Pages theme (you can change this)
+
+# Exclude files from processing
+exclude:
+  - README.md
+  - .git/
+  - .github/
+
+# Include HTML files
+include:
+  - calendar_assignment_new.html
