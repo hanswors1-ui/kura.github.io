@@ -2,6 +2,20 @@
 
 A comprehensive web-based shift planning application designed for medical facilities to manage staff schedules, leave periods, and transport crew assignments. Features bilingual support (English/Polish) for international medical teams.
 
+## 🚀 Quick Start
+
+1. Open `calendar_assignment_new.html` in your browser
+2. Click **"Manage Staff"** to add your team members
+3. Click **"Manage Leave"** to add any leave periods
+4. Click **"Assign Shifts"** to configure transports and auto-assign monthly shifts
+5. Click any day to manually edit or review assignments
+6. Use **📊 Availability**, **🔄 Shift Swap**, and **📈 Stats** for advanced features
+7. Click **🖨️ Print** to print the calendar with color-coded shifts
+
+## Features Overview
+
+**13+ Major Features** including shift management, staff tracking, leave management, swap system, availability calendar, work statistics, and more!
+
 ## Features
 
 ### 🌍 Multilingual Support
@@ -79,10 +93,76 @@ A comprehensive web-based shift planning application designed for medical facili
 - **Clear Filters**: Easy one-click filter reset
 
 ### 💾 Data Management
-- **Local Storage**: All data persisted in browser localStorage (staff, assignments, leave, transport config, language preference)
-- **Export Data**: Export all staff, assignments, leave records, and transport configuration to JSON
+- **Local Storage**: All data persisted in browser localStorage (staff, assignments, leave, transport config, language preference, swap requests)
+- **Export Data**: Export all staff, assignments, leave records, transport configuration, and swap requests to JSON
 - **Import Data**: Import previously exported JSON files
 - **Data Persistence**: No data loss on browser refresh
+
+### 🖨️ Print-Friendly Calendar
+- **Print Button**: Dedicated print button with printer icon (🖨️)
+- **Optimized Layout**: Landscape orientation for better calendar viewing
+- **Color-Coded Printing**: 
+  - Day shifts (blue), Night shifts (yellow), Control room (purple)
+  - Ambulances (red), Medical transports (green)
+  - Weekends (gray), Headers (dark gray)
+- **Print Legend**: Automatic legend showing shift type colors
+- **Background Graphics**: Instructions for enabling colors in browser print dialog
+- **Compact Design**: Optimized fonts and spacing for paper
+- **No Clutter**: Hides buttons and controls when printing
+
+### 🔄 Shift Swap Management
+- **Swap Requests**: Create formal shift swap requests between staff members
+- **Date Range Filter**: Filter shifts by date range (default: next 30 days)
+- **Swap Approval System**:
+  - Submit swap requests with optional reason
+  - Approve/Reject requests
+  - Automatic shift exchange upon approval
+- **Request Status Tracking**:
+  - Pending (orange border)
+  - Approved (green background)
+  - Rejected (red background)
+- **Complete Swap Details**: Shows who wants which shift in exchange for what
+- **History Management**: View all requests, filter by status, delete old requests
+- **Smart Shift Selection**: Dropdowns automatically load all shifts for selected staff within date range
+
+### 📊 Staff Availability Calendar
+- **Grid View**: Matrix showing all staff and all days of the month
+- **Color-Coded Status**:
+  - 🟢 Green: Available (not scheduled, not on leave)
+  - 🟡 Yellow with ✓: Scheduled for a shift
+  - 🔴 Red with ✗: On leave
+  - Gray: Weekend days
+- **Sticky Headers**: Staff names and dates stay visible when scrolling
+- **Month Navigation**: Browse any month to see availability
+- **Smart Filtering**:
+  - All Staff
+  - Available Only (staff with free days)
+  - Unavailable Only (staff fully booked/on leave)
+- **Hover Details**: Tooltips show shift details when hovering over cells
+- **Quick Planning**: See at a glance who's free for assignments
+
+### 📈 Work Statistics & Reports
+- **Statistics Dashboard**: Comprehensive work hour and shift tracking
+- **Summary Cards**:
+  - Total shifts across all staff
+  - Total hours worked
+  - Average shifts per staff member
+  - Average hours per staff member
+- **Detailed Breakdown**:
+  - Day shifts count per person
+  - Night shifts count per person
+  - Control room shifts count per person
+  - Transport assignments count per person
+  - Total days worked (unique days)
+  - Total hours worked (12h for day/night/control, 8h for transport)
+- **Smart Sorting**:
+  - By name (A-Z)
+  - By days worked (high to low or low to high)
+  - By hours worked (high to low or low to high)
+- **Search & Filter**: Real-time search by staff name
+- **CSV Export**: Download complete statistics report for Excel
+- **Month Navigation**: View statistics for any month
+- **Workload Analysis**: Identify over/under-worked staff members
 
 ## How to Use
 
@@ -151,8 +231,54 @@ A comprehensive web-based shift planning application designed for medical facili
 5. Filtered calendar cells are highlighted in blue
 6. Click **"Clear Filter"** to reset
 
+### Printing Calendar
+1. Navigate to the month you want to print
+2. Apply any filters if needed (specific staff or shift type)
+3. Click **"🖨️ Print"** button
+4. Read the alert about enabling background graphics
+5. In print dialog:
+   - Enable "Background graphics" or "Print backgrounds"
+   - Orientation is automatically set to landscape
+6. Print or save as PDF
+
+### Shift Swapping
+1. Click **"🔄 Shift Swap"** button
+2. Set date range filter (defaults to next 30 days)
+3. Select requesting staff member
+4. Choose their shift to swap from dropdown
+5. Select swap partner staff member
+6. Choose which shift they'll take in exchange
+7. Add optional reason
+8. Click **"Submit Swap Request"**
+9. View all requests in the list below
+10. Approve/Reject pending requests
+11. Filter by status: All/Pending/Approved/Rejected
+
+### Viewing Staff Availability
+1. Click **"📊 Availability"** button
+2. See grid with all staff and their availability
+3. Navigate months with Previous/Next buttons
+4. Use filter dropdown to show:
+   - All Staff
+   - Available Only (staff with free days)
+   - Unavailable Only (completely booked)
+5. Hover over cells for shift details
+6. Green = available, Yellow = scheduled, Red = on leave
+
+### Viewing Work Statistics
+1. Click **"📈 Stats"** button
+2. View summary cards showing totals and averages
+3. Navigate months to see different periods
+4. Use search box to find specific staff
+5. Sort by name, days, or hours using dropdown
+6. Click **"📥 Export to CSV"** to download report
+7. Table shows:
+   - Day/Night/Control/Transport shift counts
+   - Total days worked per person
+   - Total hours worked per person
+
 ### Export/Import
-- **Export**: Click "Export Data" to download a JSON file with all data
+- **Export**: Click "Export Data" to download a JSON file with all data (includes swap requests)
 - **Import**: Click "Import Data" and select a previously exported JSON file
 - Use for backup, sharing, or transferring data between browsers
 
@@ -164,6 +290,7 @@ All data is stored in browser localStorage:
 - `assignments`: Daily shift assignments
 - `leaveRecords`: Leave periods
 - `transportsConfig`: Ambulance and medical transport counts (separate limits per type)
+- `swapRequests`: Shift swap requests with status tracking
 - `language`: User's preferred interface language (en/pl)
 
 ### Browser Compatibility
@@ -178,9 +305,17 @@ Export files are JSON format containing:
   "people": [...],
   "assignments": {...},
   "leaveRecords": [...],
-  "transportsConfig": {...}
+  "transportsConfig": {...},
+  "swapRequests": [...]
 }
 ```
+
+### Hours Calculation
+Work statistics calculate hours based on:
+- **Day Shift**: 12 hours
+- **Night Shift**: 12 hours
+- **Control Room**: 12 hours
+- **Transport**: 8 hours (average)
 
 ## Tips & Best Practices
 
@@ -191,6 +326,12 @@ Export files are JSON format containing:
 5. **Language Preference**: Select your preferred language (EN/PL) - it will be remembered for future sessions
 6. **Browser Storage**: Remember that data is browser-specific - export to move between browsers
 7. **Scrolling**: Use scroll within calendar day cells to view all assignments when multiple shifts are assigned
+8. **Print Colors**: Enable "Background graphics" in your browser's print settings to see color-coded shifts
+9. **Date Range Filtering**: Use the date range filter in shift swap to focus on upcoming shifts only
+10. **Availability Check**: Use the Availability Calendar before assigning shifts to see who's free
+11. **Statistics Review**: Check work statistics monthly to ensure fair workload distribution
+12. **CSV Reports**: Export statistics to CSV for payroll or management reporting
+13. **Swap Requests**: Encourage staff to use the swap system for better tracking and approval workflow
 
 ## Troubleshooting
 
@@ -216,7 +357,32 @@ Export files are JSON format containing:
 - Use Previous/Next Month buttons to re-render calendar
 - Refresh browser page if issues persist
 
+### Print Colors Not Showing
+- Ensure "Background graphics" is enabled in print settings
+- Chrome/Edge: Click "More settings" → Enable "Background graphics"
+- Firefox: Under "Appearance" → Check "Print backgrounds"
+- Safari: In print dialog → Check "Print backgrounds"
+
+### Statistics Not Accurate
+- Verify all shifts are properly saved
+- Check that month/year is correct
+- Transport shifts count as 8 hours each
+- Day/Night/Control shifts count as 12 hours each
+
+### Shift Swap Date Range Empty
+- Ensure staff members have shifts assigned in the selected date range
+- Try clearing date range filter to see all shifts
+- Check that assignments exist for the current/future months
+
 ## Recent Updates
+
+### Version 3.0 Features (Latest)
+- ✅ **Print-Friendly Calendar**: Optimized printing with color-coded shifts and legend
+- ✅ **Shift Swap System**: Complete swap request and approval workflow with date filtering
+- ✅ **Staff Availability Calendar**: Visual grid showing availability status for all staff
+- ✅ **Work Statistics Dashboard**: Comprehensive tracking of days and hours worked per employee
+- ✅ **CSV Export**: Download statistics reports for external analysis
+- ✅ **Enhanced Data Persistence**: Swap requests included in export/import
 
 ### Version 2.0 Features
 - ✅ **Bilingual Support**: Complete English/Polish translation system
@@ -226,6 +392,15 @@ Export files are JSON format containing:
 - ✅ **Enhanced Calendar**: Scrollable cells with better text layout
 - ✅ **Localized Dates**: Month and day names in selected language
 
+## Feature Highlights
+
+### 🆕 New in Version 3.0
+1. **Print Calendar** (🖨️): Professional print layout with color legend
+2. **Shift Swap** (🔄): Formal request/approval system with date range filtering
+3. **Availability Grid** (📊): Visual matrix of staff availability across entire month
+4. **Work Statistics** (📈): Automatic calculation of days and hours per staff member
+5. **CSV Export**: Download statistical reports for payroll and management
+
 ## Future Enhancements
 
 Potential improvements for future versions:
@@ -233,11 +408,11 @@ Potential improvements for future versions:
 - Role-based assignment rules (e.g., senior staff required for certain shifts)
 - Conflict detection and warnings
 - Multi-month view
-- Print-friendly calendar format
-- Shift swap functionality
-- Staff availability calendar
 - Mobile responsive design improvements
 - Cloud storage integration
+- Email notifications for shift swaps
+- Custom shift hour configuration
+- PDF export for schedules
 
 ## License
 
