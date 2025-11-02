@@ -95,12 +95,33 @@
             background-color: #f9f9f9;
         }
 
+        .calendar-day.holiday {
+            background-color: #fff3e0;
+            border-left: 4px solid #ff9800;
+        }
+
         .calendar-day.today {
             border: 2px solid #4CAF50;
         }
 
         .calendar-day.filtered {
             background-color: #e6f3ff;
+        }
+
+        .calendar-day.insufficient-staff {
+            background-color: #ffebee !important;
+            border: 2px solid #f44336 !important;
+        }
+
+        .holiday-label {
+            font-size: 0.75em;
+            color: #ff6f00;
+            font-weight: bold;
+            margin: 2px 0;
+            padding: 2px 4px;
+            background-color: rgba(255, 152, 0, 0.1);
+            border-radius: 3px;
+            text-align: center;
         }
 
         .assignment {
@@ -533,9 +554,38 @@
                 color-adjust: exact !important;
             }
 
+            .calendar-day.holiday {
+                background-color: #fff3e0 !important;
+                background: #fff3e0 !important;
+                border-left: 4px solid #ff9800 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            .holiday-label {
+                font-size: 8pt !important;
+                color: #ff6f00 !important;
+                font-weight: bold !important;
+                padding: 1px 3px !important;
+                background-color: rgba(255, 152, 0, 0.2) !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
             .calendar-day.today {
                 border: 2px solid #000 !important;
                 font-weight: bold;
+            }
+
+            .calendar-day.insufficient-staff {
+                background-color: #ffcdd2 !important;
+                background: #ffcdd2 !important;
+                border: 2px solid #f44336 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
             }
 
             .calendar-day .day-number {
@@ -806,6 +856,7 @@
             <span class="print-legend-item" style="background-color: #d9d2e9;" data-i18n="controlRoom">Control Room</span>
             <span class="print-legend-item" style="background-color: #f4cccc;" data-i18n="ambulance">Ambulance</span>
             <span class="print-legend-item" style="background-color: #d9ead3;" data-i18n="medicalTransport">Medical Transport</span>
+            <span class="print-legend-item" style="background-color: #fff3e0; border-left: 4px solid #ff9800;" data-i18n="publicHoliday">Public Holiday</span>
         </div>
 
         <div id="calendar" class="calendar">
@@ -1392,6 +1443,7 @@
                 medicalTransport: 'Medical Transport',
                 printCalendar: 'Print Calendar',
                 legend: 'Legend',
+                publicHoliday: 'Public Holiday',
                 days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
                 shiftSwap: 'Shift Swap',
                 createSwapRequest: 'Create Swap Request',
@@ -1529,6 +1581,7 @@
                 medicalTransport: 'Transport Medyczny',
                 printCalendar: 'Drukuj Kalendarz',
                 legend: 'Legenda',
+                publicHoliday: 'Święto Państwowe',
                 days: ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'Sb'],
                 shiftSwap: 'Zamiana Zmian',
                 createSwapRequest: 'Utwórz Prośbę o Zamianę',
@@ -2024,6 +2077,87 @@
             return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
         }
 
+        // Polish Public Holidays
+        function getPolishHolidays(year) {
+            const holidays = [
+                { month: 0, day: 1, name: 'Nowy Rok', nameEn: 'New Year\'s Day' },
+                { month: 0, day: 6, name: 'Trzech Króli', nameEn: 'Epiphany' },
+                { month: 4, day: 1, name: 'Święto Pracy', nameEn: 'Labour Day' },
+                { month: 4, day: 3, name: 'Święto Konstytucji 3 Maja', nameEn: 'Constitution Day' },
+                { month: 7, day: 15, name: 'Wniebowzięcie NMP', nameEn: 'Assumption of Mary' },
+                { month: 10, day: 1, name: 'Wszystkich Świętych', nameEn: 'All Saints\' Day' },
+                { month: 10, day: 11, name: 'Narodowe Święto Niepodległości', nameEn: 'Independence Day' },
+                { month: 11, day: 25, name: 'Boże Narodzenie', nameEn: 'Christmas Day' },
+                { month: 11, day: 26, name: 'Drugi Dzień Bożego Narodzenia', nameEn: 'Boxing Day' }
+            ];
+            
+            // Calculate Easter and movable holidays
+            const easter = calculateEaster(year);
+            holidays.push({
+                month: easter.getMonth(),
+                day: easter.getDate(),
+                name: 'Wielkanoc',
+                nameEn: 'Easter Sunday'
+            });
+            
+            const easterMonday = new Date(easter);
+            easterMonday.setDate(easter.getDate() + 1);
+            holidays.push({
+                month: easterMonday.getMonth(),
+                day: easterMonday.getDate(),
+                name: 'Poniedziałek Wielkanocny',
+                nameEn: 'Easter Monday'
+            });
+            
+            const pentecost = new Date(easter);
+            pentecost.setDate(easter.getDate() + 49);
+            holidays.push({
+                month: pentecost.getMonth(),
+                day: pentecost.getDate(),
+                name: 'Zielone Świątki',
+                nameEn: 'Pentecost'
+            });
+            
+            const corpusChristi = new Date(easter);
+            corpusChristi.setDate(easter.getDate() + 60);
+            holidays.push({
+                month: corpusChristi.getMonth(),
+                day: corpusChristi.getDate(),
+                name: 'Boże Ciało',
+                nameEn: 'Corpus Christi'
+            });
+            
+            return holidays;
+        }
+
+        // Calculate Easter Sunday using Computus algorithm
+        function calculateEaster(year) {
+            const a = year % 19;
+            const b = Math.floor(year / 100);
+            const c = year % 100;
+            const d = Math.floor(b / 4);
+            const e = b % 4;
+            const f = Math.floor((b + 8) / 25);
+            const g = Math.floor((b - f + 1) / 3);
+            const h = (19 * a + b - d - g + 15) % 30;
+            const i = Math.floor(c / 4);
+            const k = c % 4;
+            const l = (32 + 2 * e + 2 * i - h - k) % 7;
+            const m = Math.floor((a + 11 * h + 22 * l) / 451);
+            const month = Math.floor((h + l - 7 * m + 114) / 31) - 1;
+            const day = ((h + l - 7 * m + 114) % 31) + 1;
+            return new Date(year, month, day);
+        }
+
+        function isPolishHoliday(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const day = date.getDate();
+            const holidays = getPolishHolidays(year);
+            
+            return holidays.find(h => h.month === month && h.day === day);
+        }
+
         function getEligibleStaff(staff, date, excludePerson = null) {
             const isWeekend = date.getDay() === 0 || date.getDay() === 6;
             return staff.filter(person => {
@@ -2174,6 +2308,10 @@
                 let classes = ['calendar-day'];
                 if (currentDate.getDay() === 0 || currentDate.getDay() === 6) classes.push('weekend');
                 
+                // Check if it's a Polish holiday
+                const holiday = isPolishHoliday(currentDate);
+                if (holiday) classes.push('holiday');
+                
                 // Check if it's today
                 const today = new Date();
                 if (year === today.getFullYear() && 
@@ -2181,6 +2319,64 @@
                     day === today.getDate()) {
                     classes.push('today');
                 }
+                
+                // Check if day has insufficient staff or staff on leave (check this before setting className)
+                const dateKey = `${year}-${month + 1}-${day}`;
+                if (assignments[dateKey]) {
+                    const hasAllRequiredStaff = 
+                        assignments[dateKey].Day && 
+                        assignments[dateKey].Night &&
+                        (assignments[dateKey].ControlRoomDay || assignments[dateKey].ControlRoom);
+                    
+                    // Check if any assigned staff member is on leave
+                    let hasStaffOnLeave = false;
+                    const checkDate = new Date(year, month, day);
+                    
+                    // Check day shift
+                    if (assignments[dateKey].Day && isPersonOnLeave(assignments[dateKey].Day, checkDate)) {
+                        hasStaffOnLeave = true;
+                    }
+                    // Check night shift
+                    if (assignments[dateKey].Night && isPersonOnLeave(assignments[dateKey].Night, checkDate)) {
+                        hasStaffOnLeave = true;
+                    }
+                    // Check control room day
+                    if (assignments[dateKey].ControlRoomDay && isPersonOnLeave(assignments[dateKey].ControlRoomDay, checkDate)) {
+                        hasStaffOnLeave = true;
+                    }
+                    // Check control room night
+                    if (assignments[dateKey].ControlRoomNight && isPersonOnLeave(assignments[dateKey].ControlRoomNight, checkDate)) {
+                        hasStaffOnLeave = true;
+                    }
+                    // Check old control room format
+                    if (assignments[dateKey].ControlRoom && isPersonOnLeave(assignments[dateKey].ControlRoom, checkDate)) {
+                        hasStaffOnLeave = true;
+                    }
+                    
+                    // Check transport staff
+                    const allTransports = [
+                        ...(assignments[dateKey].TransportsDay || []),
+                        ...(assignments[dateKey].TransportsNight || []),
+                        ...(assignments[dateKey].Transports || [])
+                    ];
+                    
+                    for (const transport of allTransports) {
+                        if (transport.crew) {
+                            for (const staffName of Object.values(transport.crew)) {
+                                if (isPersonOnLeave(staffName, checkDate)) {
+                                    hasStaffOnLeave = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (hasStaffOnLeave) break;
+                    }
+                    
+                    if (!hasAllRequiredStaff || hasStaffOnLeave) {
+                        classes.push('insufficient-staff');
+                    }
+                }
+                
                 dayCell.className = classes.join(' ');
 
                 // Add day number
@@ -2188,6 +2384,14 @@
                 dayLabel.className = 'day-number';
                 dayLabel.textContent = day;
                 dayCell.appendChild(dayLabel);
+                
+                // Add holiday name if applicable
+                if (holiday) {
+                    const holidayLabel = document.createElement('div');
+                    holidayLabel.className = 'holiday-label';
+                    holidayLabel.textContent = currentLanguage === 'pl' ? holiday.name : holiday.nameEn;
+                    dayCell.appendChild(holidayLabel);
+                }
 
                 // Add shift info
                 const shiftInfo = document.createElement('div');
@@ -2205,7 +2409,6 @@
                 dayCell.onclick = () => showDayEditModal(currentDate);
 
                 // Add assignments if they exist
-                const dateKey = `${year}-${month + 1}-${day}`;
                 if (assignments[dateKey]) {
                     if (assignments[dateKey].Day) {
                         const dayShift = document.createElement('div');
@@ -2219,26 +2422,52 @@
                         nightShift.textContent = `N: ${assignments[dateKey].Night}`;
                         dayCell.appendChild(nightShift);
                     }
-                    // Display control room assignments (old format for backwards compatibility)
-                    if (assignments[dateKey].ControlRoom) {
+                    // Display control room assignments
+                    // Only show old format if new format doesn't exist (backwards compatibility)
+                    if (assignments[dateKey].ControlRoomDay || assignments[dateKey].ControlRoomNight) {
+                        // New format with separate day/night control room
+                        if (assignments[dateKey].ControlRoomDay) {
+                            const controlDayShift = document.createElement('div');
+                            controlDayShift.className = 'assignment control';
+                            controlDayShift.textContent = `CD: ${assignments[dateKey].ControlRoomDay}`;
+                            dayCell.appendChild(controlDayShift);
+                        }
+                        if (assignments[dateKey].ControlRoomNight) {
+                            const controlNightShift = document.createElement('div');
+                            controlNightShift.className = 'assignment control';
+                            controlNightShift.textContent = `CN: ${assignments[dateKey].ControlRoomNight}`;
+                            dayCell.appendChild(controlNightShift);
+                        }
+                    } else if (assignments[dateKey].ControlRoom) {
+                        // Old format for backwards compatibility
                         const controlShift = document.createElement('div');
                         controlShift.className = 'assignment control';
                         controlShift.textContent = `C: ${assignments[dateKey].ControlRoom}`;
                         dayCell.appendChild(controlShift);
                     }
-                    // Display new format with separate day/night control room
-                    if (assignments[dateKey].ControlRoomDay) {
-                        const controlDayShift = document.createElement('div');
-                        controlDayShift.className = 'assignment control';
-                        controlDayShift.textContent = `CD: ${assignments[dateKey].ControlRoomDay}`;
-                        dayCell.appendChild(controlDayShift);
+                    // Display day transports
+                    if (assignments[dateKey].TransportsDay && assignments[dateKey].TransportsDay.length) {
+                        assignments[dateKey].TransportsDay.forEach(transport => {
+                            const transportDiv = document.createElement('div');
+                            transportDiv.className = `assignment ${transport.type === 'Ambulance' ? 'ambulance' : 'medical'}`;
+                            const crewNames = Object.values(transport.crew).join(', ');
+                            const transportTypeLabel = transport.type === 'Ambulance' ? t('ambulance') : t('medicalTransport');
+                            transportDiv.textContent = `${transportTypeLabel} D: ${crewNames}`;
+                            dayCell.appendChild(transportDiv);
+                        });
                     }
-                    if (assignments[dateKey].ControlRoomNight) {
-                        const controlNightShift = document.createElement('div');
-                        controlNightShift.className = 'assignment control';
-                        controlNightShift.textContent = `CN: ${assignments[dateKey].ControlRoomNight}`;
-                        dayCell.appendChild(controlNightShift);
+                    // Display night transports
+                    if (assignments[dateKey].TransportsNight && assignments[dateKey].TransportsNight.length) {
+                        assignments[dateKey].TransportsNight.forEach(transport => {
+                            const transportDiv = document.createElement('div');
+                            transportDiv.className = `assignment ${transport.type === 'Ambulance' ? 'ambulance' : 'medical'}`;
+                            const crewNames = Object.values(transport.crew).join(', ');
+                            const transportTypeLabel = transport.type === 'Ambulance' ? t('ambulance') : t('medicalTransport');
+                            transportDiv.textContent = `${transportTypeLabel} N: ${crewNames}`;
+                            dayCell.appendChild(transportDiv);
+                        });
                     }
+                    // Old format for backwards compatibility
                     if (assignments[dateKey].Transports && assignments[dateKey].Transports.length) {
                         assignments[dateKey].Transports.forEach(transport => {
                             const transportDiv = document.createElement('div');
@@ -2503,13 +2732,19 @@
                     }
                     assignments[dateKey].Day = null;
                     assignments[dateKey].Night = null;
+                    // Clear old format
+                    delete assignments[dateKey].ControlRoom;
+                    // Set new format
                     assignments[dateKey].ControlRoomDay = null;
                     assignments[dateKey].ControlRoomNight = null;
-                    assignments[dateKey].Transports = [];
+                    // Support both old single array and new day/night arrays
+                    assignments[dateKey].Transports = []; // Keep for backwards compatibility
+                    assignments[dateKey].TransportsDay = [];
+                    assignments[dateKey].TransportsNight = [];
                 }
 
-                // Reset monthly and weekly counts
-                clinicalStaff.forEach(person => {
+                // Reset monthly and weekly counts for ALL staff (not just clinical)
+                people.forEach(person => {
                     person.monthlyShifts = { total: 0, weekends: 0 };
                     person.weeklyShifts = 0;
                     person.lastShiftDate = null;
@@ -2562,66 +2797,106 @@
                     const medicalTransportCount = transportsConfig.medical || 0;
 
                     // Get available staff excluding day/night shift staff
-                    const transportStaff = getEligibleStaff(people, shiftDate).filter(person =>
+                    let transportStaff = people.filter(person =>
                         person !== dayPerson && person !== nightPerson
                     );
-
-                    // Get control room staff
-                    const controlRoomStaff = transportStaff.filter(p => p.roles.includes('ControlRoom'));
                     
-                    // Assign day control room staff
+                    // Apply eligibility filter (leave, rest days, etc.)
+                    transportStaff = getEligibleStaff(transportStaff, shiftDate);
+
+                    // Get ALL control room staff (exclude only day/night shift and those on leave)
+                    let controlRoomStaff = people.filter(p => {
+                        // Check if person has ControlRoom role
+                        if (!p.roles || !Array.isArray(p.roles)) return false;
+                        if (!p.roles.includes('ControlRoom')) return false;
+                        
+                        // Exclude day/night clinical staff
+                        if (p === dayPerson || p === nightPerson) return false;
+                        
+                        // Exclude those on leave
+                        try {
+                            if (isPersonOnLeave(p.name, shiftDate)) return false;
+                        } catch (e) {
+                            console.error('Error checking leave for', p.name, e);
+                        }
+                        
+                        return true;
+                    });
+                    
+                    // Sort by least shifts worked, with secondary sort by name for consistency
+                    controlRoomStaff.forEach(p => {
+                        if (!p.monthlyShifts) p.monthlyShifts = { total: 0, weekends: 0 };
+                    });
+                    controlRoomStaff.sort((a, b) => {
+                        // Primary: sort by total shifts
+                        if (a.monthlyShifts.total !== b.monthlyShifts.total) {
+                            return a.monthlyShifts.total - b.monthlyShifts.total;
+                        }
+                        // Secondary: sort by name for consistent ordering when counts are equal
+                        return a.name.localeCompare(b.name);
+                    });
+                    
+                    // Assign day control room staff (staff already sorted by least shifts)
                     if (controlRoomStaff.length > 0) {
-                        const sortedControlDay = filterAndSortPeople(controlRoomStaff, shiftDate);
-                        if (sortedControlDay.length > 0) {
-                            const controlDayPerson = sortedControlDay[0];
-                            assignments[dateKey].ControlRoomDay = controlDayPerson.name;
-                            updatePersonCounts(controlDayPerson, shiftDate, isWeekend);
-                            
-                            // Assign night control room staff (different person if possible)
-                            const controlNightEligible = controlRoomStaff.filter(p => p !== controlDayPerson);
-                            if (controlNightEligible.length > 0) {
-                                const sortedControlNight = filterAndSortPeople(controlNightEligible, shiftDate);
-                                if (sortedControlNight.length > 0) {
-                                    const controlNightPerson = sortedControlNight[0];
-                                    assignments[dateKey].ControlRoomNight = controlNightPerson.name;
-                                    updatePersonCounts(controlNightPerson, shiftDate, isWeekend);
-                                } else {
-                                    // If no other eligible person, assign the day person to night too
-                                    assignments[dateKey].ControlRoomNight = controlDayPerson.name;
+                        const controlDayPerson = controlRoomStaff[0];
+                        assignments[dateKey].ControlRoomDay = controlDayPerson.name;
+                        updatePersonCounts(controlDayPerson, shiftDate, isWeekend);
+                        
+                        // Assign night control room staff (always try to use different person)
+                        if (controlRoomStaff.length >= 2) {
+                            // Filter out day person and re-sort by least shifts
+                            const controlNightOptions = controlRoomStaff.filter(p => p !== controlDayPerson);
+                            controlNightOptions.sort((a, b) => {
+                                // Primary: sort by total shifts
+                                if (a.monthlyShifts.total !== b.monthlyShifts.total) {
+                                    return a.monthlyShifts.total - b.monthlyShifts.total;
                                 }
-                            } else {
-                                // If only one control room person available, assign them to both shifts
-                                assignments[dateKey].ControlRoomNight = controlDayPerson.name;
-                            }
+                                // Secondary: sort by name for consistency
+                                return a.name.localeCompare(b.name);
+                            });
+                            
+                            const controlNightPerson = controlNightOptions[0];
+                            assignments[dateKey].ControlRoomNight = controlNightPerson.name;
+                            updatePersonCounts(controlNightPerson, shiftDate, isWeekend);
+                        } else {
+                            // If only one control room person total, must assign them to both shifts
+                            assignments[dateKey].ControlRoomNight = controlDayPerson.name;
+                            updatePersonCounts(controlDayPerson, shiftDate, isWeekend);
                         }
                     }
 
-                    // Handle ambulance assignments
+                    // Assign ambulances for DAY shift
+                    const usedStaffDay = new Set();
                     for (let i = 0; i < ambulanceCount; i++) {
-                        const crew = {
-                            doctor: transportStaff.find(p => 
-                                p.roles.includes('Doctor') && 
-                                !assignments[dateKey].Transports.some(t => 
-                                    Object.values(t.crew).includes(p.name)
-                                )
-                            ),
-                            medic: transportStaff.find(p => 
+                        const availableDoctors = filterAndSortPeople(
+                            transportStaff.filter(p => 
+                                p.roles.includes('Doctor') && !usedStaffDay.has(p.name)
+                            ), shiftDate
+                        );
+                        
+                        const availableMedics = filterAndSortPeople(
+                            transportStaff.filter(p => 
                                 (p.roles.includes('MedicSenior') || p.roles.includes('MedicTrainee')) && 
-                                !assignments[dateKey].Transports.some(t => 
-                                    Object.values(t.crew).includes(p.name)
-                                )
-                            ),
-                            driver: transportStaff.find(p => 
-                                p.roles.includes('Driver') && 
-                                !assignments[dateKey].Transports.some(t => 
-                                    Object.values(t.crew).includes(p.name)
-                                )
-                            )
+                                !usedStaffDay.has(p.name)
+                            ), shiftDate
+                        );
+                        
+                        const availableDrivers = filterAndSortPeople(
+                            transportStaff.filter(p => 
+                                p.roles.includes('Driver') && !usedStaffDay.has(p.name)
+                            ), shiftDate
+                        );
+
+                        const crew = {
+                            doctor: availableDoctors[0],
+                            medic: availableMedics[0],
+                            driver: availableDrivers[0]
                         };
 
                         if (crew.doctor && crew.medic && crew.driver) {
-                            assignments[dateKey].Transports.push({
+                            assignments[dateKey].TransportsDay.push({
                                 type: 'Ambulance',
+                                shift: 'Day',
                                 crew: {
                                     Doctor: crew.doctor.name,
                                     Medic: crew.medic.name,
@@ -2630,37 +2905,89 @@
                             });
 
                             Object.values(crew).forEach(person => {
+                                usedStaffDay.add(person.name);
                                 updatePersonCounts(person, shiftDate, isWeekend);
                             });
                         }
                     }
 
-                    // Handle medical transport assignments
-                    for (let i = 0; i < medicalTransportCount; i++) {
-                        const crew = {
-                            medic: transportStaff.find(p => 
+                    // Assign ambulances for NIGHT shift
+                    const usedStaffNight = new Set();
+                    for (let i = 0; i < ambulanceCount; i++) {
+                        const availableDoctors = filterAndSortPeople(
+                            transportStaff.filter(p => 
+                                p.roles.includes('Doctor') && !usedStaffNight.has(p.name)
+                            ), shiftDate
+                        );
+                        
+                        const availableMedics = filterAndSortPeople(
+                            transportStaff.filter(p => 
                                 (p.roles.includes('MedicSenior') || p.roles.includes('MedicTrainee')) && 
-                                !assignments[dateKey].Transports.some(t => 
-                                    Object.values(t.crew).includes(p.name)
-                                )
-                            ),
-                            transport: transportStaff.find(p => 
-                                p.roles.includes('Transport') && 
-                                !assignments[dateKey].Transports.some(t => 
-                                    Object.values(t.crew).includes(p.name)
-                                )
-                            ),
-                            driver: transportStaff.find(p => 
-                                p.roles.includes('Driver') && 
-                                !assignments[dateKey].Transports.some(t => 
-                                    Object.values(t.crew).includes(p.name)
-                                )
-                            )
+                                !usedStaffNight.has(p.name)
+                            ), shiftDate
+                        );
+                        
+                        const availableDrivers = filterAndSortPeople(
+                            transportStaff.filter(p => 
+                                p.roles.includes('Driver') && !usedStaffNight.has(p.name)
+                            ), shiftDate
+                        );
+
+                        const crew = {
+                            doctor: availableDoctors[0],
+                            medic: availableMedics[0],
+                            driver: availableDrivers[0]
+                        };
+
+                        if (crew.doctor && crew.medic && crew.driver) {
+                            assignments[dateKey].TransportsNight.push({
+                                type: 'Ambulance',
+                                shift: 'Night',
+                                crew: {
+                                    Doctor: crew.doctor.name,
+                                    Medic: crew.medic.name,
+                                    Driver: crew.driver.name
+                                }
+                            });
+
+                            Object.values(crew).forEach(person => {
+                                usedStaffNight.add(person.name);
+                                updatePersonCounts(person, shiftDate, isWeekend);
+                            });
+                        }
+                    }
+
+                    // Assign medical transports for DAY shift
+                    for (let i = 0; i < medicalTransportCount; i++) {
+                        const availableMedics = filterAndSortPeople(
+                            transportStaff.filter(p => 
+                                (p.roles.includes('MedicSenior') || p.roles.includes('MedicTrainee')) && 
+                                !usedStaffDay.has(p.name)
+                            ), shiftDate
+                        );
+                        
+                        const availableTransport = filterAndSortPeople(
+                            transportStaff.filter(p => 
+                                p.roles.includes('Transport') && !usedStaffDay.has(p.name)
+                            ), shiftDate
+                        );
+                        
+                        const availableDrivers = filterAndSortPeople(
+                            transportStaff.filter(p => 
+                                p.roles.includes('Driver') && !usedStaffDay.has(p.name)
+                            ), shiftDate
+                        );
+
+                        const crew = {
+                            medic: availableMedics[0],
+                            transport: availableTransport[0],
+                            driver: availableDrivers[0]
                         };
 
                         if (crew.medic && crew.transport && crew.driver) {
-                            assignments[dateKey].Transports.push({
+                            assignments[dateKey].TransportsDay.push({
                                 type: 'MedicalTransport',
+                                shift: 'Day',
                                 crew: {
                                     Medic: crew.medic.name,
                                     Transport: crew.transport.name,
@@ -2669,6 +2996,52 @@
                             });
 
                             Object.values(crew).forEach(person => {
+                                usedStaffDay.add(person.name);
+                                updatePersonCounts(person, shiftDate, isWeekend);
+                            });
+                        }
+                    }
+
+                    // Assign medical transports for NIGHT shift
+                    for (let i = 0; i < medicalTransportCount; i++) {
+                        const availableMedics = filterAndSortPeople(
+                            transportStaff.filter(p => 
+                                (p.roles.includes('MedicSenior') || p.roles.includes('MedicTrainee')) && 
+                                !usedStaffNight.has(p.name)
+                            ), shiftDate
+                        );
+                        
+                        const availableTransport = filterAndSortPeople(
+                            transportStaff.filter(p => 
+                                p.roles.includes('Transport') && !usedStaffNight.has(p.name)
+                            ), shiftDate
+                        );
+                        
+                        const availableDrivers = filterAndSortPeople(
+                            transportStaff.filter(p => 
+                                p.roles.includes('Driver') && !usedStaffNight.has(p.name)
+                            ), shiftDate
+                        );
+
+                        const crew = {
+                            medic: availableMedics[0],
+                            transport: availableTransport[0],
+                            driver: availableDrivers[0]
+                        };
+
+                        if (crew.medic && crew.transport && crew.driver) {
+                            assignments[dateKey].TransportsNight.push({
+                                type: 'MedicalTransport',
+                                shift: 'Night',
+                                crew: {
+                                    Medic: crew.medic.name,
+                                    Transport: crew.transport.name,
+                                    Driver: crew.driver.name
+                                }
+                            });
+
+                            Object.values(crew).forEach(person => {
+                                usedStaffNight.add(person.name);
                                 updatePersonCounts(person, shiftDate, isWeekend);
                             });
                         }
@@ -3370,12 +3743,50 @@
                         hasShiftThisDay = true;
                     }
                     
+                    // Check old format
                     if (dayAssignments.ControlRoom === staffName) {
                         stats.controlRoom++;
                         stats.totalHours += HOURS_PER_CONTROL_SHIFT;
                         hasShiftThisDay = true;
                     }
                     
+                    // Check new format - ControlRoomDay
+                    if (dayAssignments.ControlRoomDay === staffName) {
+                        stats.controlRoom++;
+                        stats.totalHours += HOURS_PER_CONTROL_SHIFT;
+                        hasShiftThisDay = true;
+                    }
+                    
+                    // Check new format - ControlRoomNight
+                    if (dayAssignments.ControlRoomNight === staffName) {
+                        stats.controlRoom++;
+                        stats.totalHours += HOURS_PER_CONTROL_SHIFT;
+                        hasShiftThisDay = true;
+                    }
+                    
+                    // Count day transports
+                    if (dayAssignments.TransportsDay) {
+                        dayAssignments.TransportsDay.forEach(transport => {
+                            if (Object.values(transport.crew).includes(staffName)) {
+                                stats.transports++;
+                                stats.totalHours += HOURS_PER_TRANSPORT;
+                                hasShiftThisDay = true;
+                            }
+                        });
+                    }
+                    
+                    // Count night transports
+                    if (dayAssignments.TransportsNight) {
+                        dayAssignments.TransportsNight.forEach(transport => {
+                            if (Object.values(transport.crew).includes(staffName)) {
+                                stats.transports++;
+                                stats.totalHours += HOURS_PER_TRANSPORT;
+                                hasShiftThisDay = true;
+                            }
+                        });
+                    }
+                    
+                    // Old format for backwards compatibility
                     if (dayAssignments.Transports) {
                         dayAssignments.Transports.forEach(transport => {
                             if (Object.values(transport.crew).includes(staffName)) {
