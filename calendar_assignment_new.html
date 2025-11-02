@@ -268,6 +268,333 @@
             background-color: #f9f9f9;
             border-radius: 4px;
         }
+
+        /* Print Styles */
+        @media print {
+            /* Hide all buttons and controls when printing */
+            .controls,
+            button,
+            .modal,
+            #importFile {
+                display: none !important;
+            }
+
+            /* Reset page margins and size */
+            @page {
+                size: landscape;
+                margin: 0.5cm;
+            }
+
+            body {
+                margin: 0;
+                padding: 10px;
+                font-size: 10pt;
+            }
+
+            .container {
+                max-width: 100%;
+                margin: 0;
+            }
+
+            h1 {
+                font-size: 16pt;
+                margin: 0 0 10px 0;
+                text-align: center;
+            }
+
+            #currentMonth {
+                display: block;
+                text-align: center;
+                font-size: 14pt;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+
+            /* Calendar grid adjustments */
+            .calendar {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                gap: 2px;
+                margin-top: 10px;
+                page-break-inside: avoid;
+            }
+
+            .calendar-header {
+                padding: 5px;
+                font-size: 10pt;
+                font-weight: bold;
+                text-align: center;
+                background-color: #e0e0e0 !important;
+                background: #e0e0e0 !important;
+                border: 1px solid #000;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            .calendar-day {
+                border: 1px solid #000;
+                padding: 3px;
+                height: auto;
+                min-height: 80px;
+                font-size: 8pt;
+                overflow: visible;
+                page-break-inside: avoid;
+                background-color: #fff !important;
+                background: #fff !important;
+            }
+
+            .calendar-day.empty {
+                background-color: #f5f5f5 !important;
+                background: #f5f5f5 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            .calendar-day.weekend {
+                background-color: #f0f0f0 !important;
+                background: #f0f0f0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            .calendar-day.today {
+                border: 2px solid #000 !important;
+                font-weight: bold;
+            }
+
+            .calendar-day .day-number {
+                font-size: 10pt;
+                font-weight: bold;
+                margin-bottom: 3px;
+                position: static;
+                padding-bottom: 2px;
+                border-bottom: 1px solid #ccc;
+            }
+
+            .calendar-day .shift-info {
+                font-size: 7pt;
+                line-height: 1.3;
+                margin-top: 3px;
+                overflow: visible;
+            }
+
+            /* Assignment styling for print */
+            .assignment {
+                margin: 2px 0;
+                padding: 2px 3px;
+                border-radius: 2px;
+                font-size: 7pt;
+                line-height: 1.2;
+                border: 1px solid #000 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            .assignment.day {
+                background-color: #cfe2f3 !important;
+                background: #cfe2f3 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            .assignment.night {
+                background-color: #fff2cc !important;
+                background: #fff2cc !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            .assignment.control {
+                background-color: #d9d2e9 !important;
+                background: #d9d2e9 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            .assignment.ambulance {
+                background-color: #f4cccc !important;
+                background: #f4cccc !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            .assignment.medical {
+                background-color: #d9ead3 !important;
+                background: #d9ead3 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            /* Print legend */
+            .print-legend {
+                display: block !important;
+                margin: 10px 0;
+                padding: 5px;
+                border: 1px solid #000;
+                font-size: 8pt;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            .print-legend h3 {
+                margin: 0 0 5px 0;
+                font-size: 10pt;
+            }
+
+            .print-legend-item {
+                display: inline-block;
+                margin-right: 15px;
+                padding: 2px 5px;
+                border-radius: 2px;
+                border: 1px solid #000;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+        }
+
+        /* Print legend - hidden on screen */
+        .print-legend {
+            display: none;
+        }
+
+        /* Shift Swap Styles */
+        .swap-request {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+
+        .swap-request.pending {
+            border-left: 4px solid #ff9800;
+        }
+
+        .swap-request.approved {
+            border-left: 4px solid #4CAF50;
+            background-color: #e8f5e9;
+        }
+
+        .swap-request.rejected {
+            border-left: 4px solid #f44336;
+            background-color: #ffebee;
+        }
+
+        .swap-request-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .swap-request-details {
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+
+        .swap-request-actions {
+            margin-top: 8px;
+        }
+
+        .swap-request-actions button {
+            margin-right: 5px;
+            padding: 4px 12px;
+            font-size: 0.9em;
+        }
+
+        .swap-history-container {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        /* Staff Availability Styles */
+        .availability-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+
+        .availability-table th,
+        .availability-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .availability-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .availability-table th.staff-name {
+            position: sticky;
+            left: 0;
+            z-index: 11;
+            background-color: #e0e0e0;
+            text-align: left;
+            min-width: 150px;
+        }
+
+        .availability-table td.staff-name {
+            position: sticky;
+            left: 0;
+            background-color: #f9f9f9;
+            font-weight: bold;
+            text-align: left;
+            z-index: 5;
+        }
+
+        .availability-cell {
+            min-width: 40px;
+            height: 35px;
+            cursor: help;
+        }
+
+        .availability-cell.available {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .availability-cell.scheduled {
+            background-color: #FFC107;
+            color: black;
+        }
+
+        .availability-cell.on-leave {
+            background-color: #F44336;
+            color: white;
+        }
+
+        .availability-cell.weekend {
+            background-color: #e0e0e0;
+        }
+
+        .availability-cell:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+            transition: all 0.2s;
+        }
+
+        .day-header {
+            font-size: 0.85em;
+        }
+
+        .day-number {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -284,7 +611,11 @@
                 <button onclick="showStaffModal()" data-i18n="manageStaff">Manage Staff</button>
                 <button onclick="showLeaveModal()" data-i18n="manageLeave">Manage Leave</button>
                 <button onclick="showAssignmentModal()" data-i18n="assignShifts">Assign Shifts</button>
+                <button onclick="showShiftSwapModal()" data-i18n="shiftSwap" style="background-color: #9C27B0;">🔄 Shift Swap</button>
+                <button onclick="showAvailabilityModal()" data-i18n="staffAvailability" style="background-color: #00BCD4;">📊 Availability</button>
+                <button onclick="showStatsModal()" data-i18n="workStats" style="background-color: #673AB7;">📈 Stats</button>
                 <button onclick="showFilterModal()" data-i18n="filterView">Filter View</button>
+                <button onclick="printCalendar()" data-i18n="printCalendar" style="background-color: #FF9800;">🖨️ Print</button>
                 <button onclick="exportData()" data-i18n="exportData">Export Data</button>
                 <button onclick="document.getElementById('importFile').click();" data-i18n="importData">Import Data</button>
                 <button onclick="toggleLanguage()" id="langToggle" style="background-color: #2196F3;">EN/PL</button>
@@ -293,6 +624,16 @@
 
     <!-- Hidden file input for import -->
     <input type="file" id="importFile" accept="application/json" style="display:none" onchange="handleImportFile(event)">
+
+        <!-- Print Legend (only visible when printing) -->
+        <div class="print-legend">
+            <h3 data-i18n="legend">Legend:</h3>
+            <span class="print-legend-item" style="background-color: #cfe2f3;" data-i18n="dayShift">Day Shift</span>
+            <span class="print-legend-item" style="background-color: #fff2cc;" data-i18n="nightShift">Night Shift</span>
+            <span class="print-legend-item" style="background-color: #d9d2e9;" data-i18n="controlRoom">Control Room</span>
+            <span class="print-legend-item" style="background-color: #f4cccc;" data-i18n="ambulance">Ambulance</span>
+            <span class="print-legend-item" style="background-color: #d9ead3;" data-i18n="medicalTransport">Medical Transport</span>
+        </div>
 
         <div id="calendar" class="calendar">
             <!-- Calendar will be populated by JavaScript -->
@@ -542,6 +883,205 @@
                 </div>
             </div>
         </div>
+
+        <!-- Shift Swap Modal -->
+        <div id="shiftSwapModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeShiftSwapModal()">&times;</span>
+                <h2 data-i18n="shiftSwap">Shift Swap</h2>
+                
+                <!-- Create New Swap Request -->
+                <div style="margin-bottom: 30px; padding: 15px; background-color: #f5f5f5; border-radius: 4px;">
+                    <h3 data-i18n="createSwapRequest">Create Swap Request</h3>
+                    
+                    <!-- Date Range Filter -->
+                    <div style="margin-bottom: 15px; padding: 10px; background-color: #fff; border-radius: 4px; border: 1px solid #ddd;">
+                        <label><strong data-i18n="dateRangeFilter">Date Range Filter:</strong></label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px;">
+                            <div>
+                                <label data-i18n="fromDate" style="font-size: 0.9em;">From:</label>
+                                <input type="date" id="swapDateFrom" style="width: 100%;" onchange="updateShiftDropdowns()">
+                            </div>
+                            <div>
+                                <label data-i18n="toDate" style="font-size: 0.9em;">To:</label>
+                                <input type="date" id="swapDateTo" style="width: 100%;" onchange="updateShiftDropdowns()">
+                            </div>
+                        </div>
+                        <button onclick="clearDateRange()" style="margin-top: 5px; padding: 4px 8px; font-size: 0.85em; background-color: #999;" data-i18n="clearDateRange">Clear Date Range</button>
+                    </div>
+                    
+                    <div style="margin-bottom: 10px;">
+                        <label><strong data-i18n="requestingStaff">Requesting Staff:</strong></label><br>
+                        <select id="swapFromStaff" style="width: 100%;" onchange="loadStaffShifts('from')">
+                            <option value="" data-i18n="selectStaffMember">Select Staff Member</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label><strong data-i18n="theirShift">Their Shift to Swap:</strong></label><br>
+                        <select id="swapFromShift" style="width: 100%;">
+                            <option value="" data-i18n="selectShift">Select a shift</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label><strong data-i18n="swapWith">Swap With:</strong></label><br>
+                        <select id="swapToStaff" style="width: 100%;" onchange="loadStaffShifts('to')">
+                            <option value="" data-i18n="selectStaffMember">Select Staff Member</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label><strong data-i18n="takeTheirShift">Take Their Shift:</strong></label><br>
+                        <select id="swapToShift" style="width: 100%;">
+                            <option value="" data-i18n="selectShift">Select a shift</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label><strong data-i18n="reason">Reason (optional):</strong></label><br>
+                        <textarea id="swapReason" style="width: 100%; height: 60px;" data-i18n="reasonPlaceholder" placeholder="Enter reason for swap request..."></textarea>
+                    </div>
+                    <button onclick="createSwapRequest()" data-i18n="submitSwapRequest">Submit Swap Request</button>
+                </div>
+
+                <!-- View Swap Requests -->
+                <div>
+                    <h3 data-i18n="swapRequests">Swap Requests</h3>
+                    <div style="margin-bottom: 10px;">
+                        <label><strong data-i18n="filterBy">Filter by:</strong></label>
+                        <select id="swapFilter" style="width: 200px; margin-left: 10px;" onchange="displaySwapRequests()">
+                            <option value="all" data-i18n="allRequests">All Requests</option>
+                            <option value="pending" data-i18n="pendingRequests">Pending</option>
+                            <option value="approved" data-i18n="approvedRequests">Approved</option>
+                            <option value="rejected" data-i18n="rejectedRequests">Rejected</option>
+                        </select>
+                    </div>
+                    <div id="swapRequestsList" class="swap-history-container">
+                        <!-- Swap requests will be displayed here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Staff Availability Modal -->
+        <div id="availabilityModal" class="modal">
+            <div class="modal-content" style="max-width: 95%; width: 1400px;">
+                <span class="close" onclick="closeAvailabilityModal()">&times;</span>
+                <h2 data-i18n="staffAvailability">Staff Availability Calendar</h2>
+                
+                <div style="margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div>
+                            <button onclick="previousMonthAvailability()" data-i18n="previousMonth">Previous Month</button>
+                            <span id="availabilityMonth" style="margin: 0 15px; font-weight: bold; font-size: 1.1em;"></span>
+                            <button onclick="nextMonthAvailability()" data-i18n="nextMonth">Next Month</button>
+                        </div>
+                        <div>
+                            <label><strong data-i18n="showOnlyAvailable">Show only:</strong></label>
+                            <select id="availabilityFilter" style="margin-left: 10px; padding: 5px;" onchange="renderAvailabilityCalendar()">
+                                <option value="all" data-i18n="allStaff">All Staff</option>
+                                <option value="available" data-i18n="availableOnly">Available Only</option>
+                                <option value="unavailable" data-i18n="unavailableOnly">Unavailable Only</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Legend -->
+                    <div style="padding: 10px; background-color: #f5f5f5; border-radius: 4px; margin-bottom: 15px;">
+                        <strong data-i18n="legend">Legend:</strong>
+                        <span style="margin-left: 15px;">
+                            <span style="display: inline-block; width: 15px; height: 15px; background-color: #4CAF50; border: 1px solid #333; margin-right: 5px;"></span>
+                            <span data-i18n="available">Available</span>
+                        </span>
+                        <span style="margin-left: 15px;">
+                            <span style="display: inline-block; width: 15px; height: 15px; background-color: #FFC107; border: 1px solid #333; margin-right: 5px;"></span>
+                            <span data-i18n="scheduled">Scheduled</span>
+                        </span>
+                        <span style="margin-left: 15px;">
+                            <span style="display: inline-block; width: 15px; height: 15px; background-color: #F44336; border: 1px solid #333; margin-right: 5px;"></span>
+                            <span data-i18n="onLeave">On Leave</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Availability Grid -->
+                <div id="availabilityGrid" style="overflow-x: auto; max-height: 600px; overflow-y: auto;">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Work Statistics Modal -->
+        <div id="statsModal" class="modal">
+            <div class="modal-content" style="max-width: 1200px;">
+                <span class="close" onclick="closeStatsModal()">&times;</span>
+                <h2 data-i18n="workStats">Work Statistics</h2>
+                
+                <div style="margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div>
+                            <button onclick="previousMonthStats()" data-i18n="previousMonth">Previous Month</button>
+                            <span id="statsMonth" style="margin: 0 15px; font-weight: bold; font-size: 1.1em;"></span>
+                            <button onclick="nextMonthStats()" data-i18n="nextMonth">Next Month</button>
+                        </div>
+                        <div>
+                            <button onclick="exportStatsToCSV()" style="background-color: #4CAF50;" data-i18n="exportToCSV">📥 Export to CSV</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Summary Cards -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                        <div style="padding: 15px; background-color: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196F3;">
+                            <div style="font-size: 0.9em; color: #666;" data-i18n="totalShifts">Total Shifts</div>
+                            <div style="font-size: 2em; font-weight: bold;" id="totalShiftsCount">0</div>
+                        </div>
+                        <div style="padding: 15px; background-color: #f3e5f5; border-radius: 8px; border-left: 4px solid #9C27B0;">
+                            <div style="font-size: 0.9em; color: #666;" data-i18n="totalHours">Total Hours</div>
+                            <div style="font-size: 2em; font-weight: bold;" id="totalHoursCount">0</div>
+                        </div>
+                        <div style="padding: 15px; background-color: #e8f5e9; border-radius: 8px; border-left: 4px solid #4CAF50;">
+                            <div style="font-size: 0.9em; color: #666;" data-i18n="avgShiftsPerStaff">Avg Shifts/Staff</div>
+                            <div style="font-size: 2em; font-weight: bold;" id="avgShiftsCount">0</div>
+                        </div>
+                        <div style="padding: 15px; background-color: #fff3e0; border-radius: 8px; border-left: 4px solid #FF9800;">
+                            <div style="font-size: 0.9em; color: #666;" data-i18n="avgHoursPerStaff">Avg Hours/Staff</div>
+                            <div style="font-size: 2em; font-weight: bold;" id="avgHoursCount">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Search/Filter -->
+                    <div style="margin-bottom: 15px;">
+                        <input type="text" id="statsSearch" placeholder="Search staff..." 
+                            style="width: 300px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"
+                            oninput="filterStatsTable()" data-i18n-placeholder="searchStaff">
+                        <select id="statsSortBy" style="margin-left: 10px; padding: 8px;" onchange="renderStatsTable()">
+                            <option value="name" data-i18n="sortByName">Sort by Name</option>
+                            <option value="days-desc" data-i18n="sortByDaysDesc">Sort by Days (High-Low)</option>
+                            <option value="days-asc" data-i18n="sortByDaysAsc">Sort by Days (Low-High)</option>
+                            <option value="hours-desc" data-i18n="sortByHoursDesc">Sort by Hours (High-Low)</option>
+                            <option value="hours-asc" data-i18n="sortByHoursAsc">Sort by Hours (Low-High)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Statistics Table -->
+                <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
+                    <table id="statsTable" style="width: 100%; border-collapse: collapse;">
+                        <thead style="position: sticky; top: 0; background-color: #f2f2f2; z-index: 10;">
+                            <tr>
+                                <th style="padding: 10px; text-align: left; border: 1px solid #ddd;" data-i18n="staff">Staff</th>
+                                <th style="padding: 10px; text-align: center; border: 1px solid #ddd;" data-i18n="dayShifts">Day Shifts</th>
+                                <th style="padding: 10px; text-align: center; border: 1px solid #ddd;" data-i18n="nightShifts">Night Shifts</th>
+                                <th style="padding: 10px; text-align: center; border: 1px solid #ddd;" data-i18n="controlRoom">Control Room</th>
+                                <th style="padding: 10px; text-align: center; border: 1px solid #ddd;" data-i18n="transports">Transports</th>
+                                <th style="padding: 10px; text-align: center; border: 1px solid #ddd; background-color: #e3f2fd;" data-i18n="totalDays">Total Days</th>
+                                <th style="padding: 10px; text-align: center; border: 1px solid #ddd; background-color: #f3e5f5;" data-i18n="totalHours">Total Hours</th>
+                            </tr>
+                        </thead>
+                        <tbody id="statsTableBody">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -628,7 +1168,63 @@
                 selectMedic: 'Select Medic',
                 selectDriver: 'Select Driver',
                 ambulance: 'Ambulance',
-                medicalTransport: 'Medical Transport'
+                medicalTransport: 'Medical Transport',
+                printCalendar: 'Print Calendar',
+                legend: 'Legend',
+                days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                shiftSwap: 'Shift Swap',
+                createSwapRequest: 'Create Swap Request',
+                requestingStaff: 'Requesting Staff',
+                theirShift: 'Their Shift to Swap',
+                swapWith: 'Swap With',
+                takeTheirShift: 'Take Their Shift',
+                reason: 'Reason (optional)',
+                reasonPlaceholder: 'Enter reason for swap request...',
+                submitSwapRequest: 'Submit Swap Request',
+                swapRequests: 'Swap Requests',
+                filterBy: 'Filter by',
+                allRequests: 'All Requests',
+                pendingRequests: 'Pending',
+                approvedRequests: 'Approved',
+                rejectedRequests: 'Rejected',
+                selectShift: 'Select a shift',
+                approve: 'Approve',
+                reject: 'Reject',
+                cancel: 'Cancel',
+                pending: 'Pending',
+                approved: 'Approved',
+                rejected: 'Rejected',
+                swapDetails: 'Swap Details',
+                from: 'From',
+                to: 'To',
+                wants: 'wants',
+                inExchangeFor: 'in exchange for',
+                dateRangeFilter: 'Date Range Filter',
+                fromDate: 'From',
+                toDate: 'To',
+                clearDateRange: 'Clear Date Range',
+                staffAvailability: 'Staff Availability',
+                showOnlyAvailable: 'Show only',
+                allStaff: 'All Staff',
+                availableOnly: 'Available Only',
+                unavailableOnly: 'Unavailable Only',
+                available: 'Available',
+                scheduled: 'Scheduled',
+                onLeave: 'On Leave',
+                staff: 'Staff',
+                workStats: 'Work Statistics',
+                totalShifts: 'Total Shifts',
+                totalHours: 'Total Hours',
+                avgShiftsPerStaff: 'Avg Shifts/Staff',
+                avgHoursPerStaff: 'Avg Hours/Staff',
+                exportToCSV: 'Export to CSV',
+                sortByName: 'Sort by Name',
+                sortByDaysDesc: 'Sort by Days (High-Low)',
+                sortByDaysAsc: 'Sort by Days (Low-High)',
+                sortByHoursDesc: 'Sort by Hours (High-Low)',
+                sortByHoursAsc: 'Sort by Hours (Low-High)',
+                totalDays: 'Total Days',
+                hours: 'hours'
             },
             pl: {
                 title: 'Planer Zmian Medycznych',
@@ -709,7 +1305,63 @@
                 selectMedic: 'Wybierz Ratownika',
                 selectDriver: 'Wybierz Kierowcę',
                 ambulance: 'Ambulans',
-                medicalTransport: 'Transport Medyczny'
+                medicalTransport: 'Transport Medyczny',
+                printCalendar: 'Drukuj Kalendarz',
+                legend: 'Legenda',
+                days: ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'Sb'],
+                shiftSwap: 'Zamiana Zmian',
+                createSwapRequest: 'Utwórz Prośbę o Zamianę',
+                requestingStaff: 'Pracownik Proszący',
+                theirShift: 'Ich Zmiana do Zamiany',
+                swapWith: 'Zamień z',
+                takeTheirShift: 'Przejmij Ich Zmianę',
+                reason: 'Powód (opcjonalnie)',
+                reasonPlaceholder: 'Wprowadź powód prośby o zamianę...',
+                submitSwapRequest: 'Wyślij Prośbę o Zamianę',
+                swapRequests: 'Prośby o Zamianę',
+                filterBy: 'Filtruj według',
+                allRequests: 'Wszystkie Prośby',
+                pendingRequests: 'Oczekujące',
+                approvedRequests: 'Zatwierdzone',
+                rejectedRequests: 'Odrzucone',
+                selectShift: 'Wybierz zmianę',
+                approve: 'Zatwierdź',
+                reject: 'Odrzuć',
+                cancel: 'Anuluj',
+                pending: 'Oczekujące',
+                approved: 'Zatwierdzone',
+                rejected: 'Odrzucone',
+                swapDetails: 'Szczegóły Zamiany',
+                from: 'Od',
+                to: 'Do',
+                wants: 'chce',
+                inExchangeFor: 'w zamian za',
+                dateRangeFilter: 'Filtr Zakresu Dat',
+                fromDate: 'Od',
+                toDate: 'Do',
+                clearDateRange: 'Wyczyść Zakres Dat',
+                staffAvailability: 'Dostępność Personelu',
+                showOnlyAvailable: 'Pokaż tylko',
+                allStaff: 'Cały Personel',
+                availableOnly: 'Tylko Dostępni',
+                unavailableOnly: 'Tylko Niedostępni',
+                available: 'Dostępny',
+                scheduled: 'Zaplanowany',
+                onLeave: 'Na Urlopie',
+                staff: 'Personel',
+                workStats: 'Statystyki Pracy',
+                totalShifts: 'Całkowite Zmiany',
+                totalHours: 'Całkowite Godziny',
+                avgShiftsPerStaff: 'Średnio Zmian/Pracownik',
+                avgHoursPerStaff: 'Średnio Godzin/Pracownik',
+                exportToCSV: 'Eksportuj do CSV',
+                sortByName: 'Sortuj według Imienia',
+                sortByDaysDesc: 'Sortuj według Dni (Wysoki-Niski)',
+                sortByDaysAsc: 'Sortuj według Dni (Niski-Wysoki)',
+                sortByHoursDesc: 'Sortuj według Godzin (Wysoki-Niski)',
+                sortByHoursAsc: 'Sortuj według Godzin (Niski-Wysoki)',
+                totalDays: 'Całkowite Dni',
+                hours: 'godziny'
             }
         };
 
@@ -782,9 +1434,12 @@
 
         // Global variables
         let currentDate = new Date();
+        let availabilityDate = new Date();
+        let statsDate = new Date();
         let people = [];
         let assignments = {};
         let leaveRecords = [];
+        let swapRequests = [];
         let currentFilter = {
             staffMember: '',
             shiftType: ''
@@ -797,6 +1452,7 @@
             loadAssignmentsFromStorage();
             loadTransportsFromStorage();
             loadLeaveFromStorage();
+            loadSwapRequestsFromStorage();
             updateLanguage();
             updateCalendar();
         };
@@ -1182,6 +1838,22 @@
         function nextMonth() {
             currentDate.setMonth(currentDate.getMonth() + 1);
             updateCalendar();
+        }
+
+        function printCalendar() {
+            // Show instructions for enabling background colors
+            const message = currentLanguage === 'pl' 
+                ? 'WAŻNE: W oknie druku upewnij się, że opcja "Grafika tła" lub "Background graphics" jest WŁĄCZONA, aby zobaczyć kolory.\n\n' +
+                  'Chrome/Edge: Więcej ustawień → Grafika tła\n' +
+                  'Firefox: Wygląd strony → Drukuj tła'
+                : 'IMPORTANT: In the print dialog, make sure "Background graphics" is ENABLED to see colors.\n\n' +
+                  'Chrome/Edge: More settings → Background graphics\n' +
+                  'Firefox: Appearance → Print backgrounds';
+            
+            alert(message);
+            
+            // Trigger the browser's print dialog
+            window.print();
         }
 
         // Calendar rendering
@@ -1853,12 +2525,739 @@
             alert('Transports configuration saved.');
         }
 
+        // Shift Swap Functions
+        function showShiftSwapModal() {
+            document.getElementById('shiftSwapModal').style.display = 'block';
+            populateSwapStaffSelects();
+            initializeDateRange();
+            displaySwapRequests();
+        }
+
+        function closeShiftSwapModal() {
+            document.getElementById('shiftSwapModal').style.display = 'none';
+        }
+
+        function initializeDateRange() {
+            // Set default date range to next 30 days
+            const today = new Date();
+            const thirtyDaysLater = new Date(today);
+            thirtyDaysLater.setDate(today.getDate() + 30);
+            
+            document.getElementById('swapDateFrom').value = today.toISOString().split('T')[0];
+            document.getElementById('swapDateTo').value = thirtyDaysLater.toISOString().split('T')[0];
+        }
+
+        function clearDateRange() {
+            document.getElementById('swapDateFrom').value = '';
+            document.getElementById('swapDateTo').value = '';
+            updateShiftDropdowns();
+        }
+
+        function updateShiftDropdowns() {
+            // Reload shifts for both staff members if they are selected
+            const fromStaff = document.getElementById('swapFromStaff').value;
+            const toStaff = document.getElementById('swapToStaff').value;
+            
+            if (fromStaff) {
+                loadStaffShifts('from');
+            }
+            if (toStaff) {
+                loadStaffShifts('to');
+            }
+        }
+
+        function populateSwapStaffSelects() {
+            const fromSelect = document.getElementById('swapFromStaff');
+            const toSelect = document.getElementById('swapToStaff');
+            
+            // Clear existing options except the first one
+            fromSelect.innerHTML = '<option value="">' + t('selectStaffMember') + '</option>';
+            toSelect.innerHTML = '<option value="">' + t('selectStaffMember') + '</option>';
+            
+            people.forEach(person => {
+                const option1 = document.createElement('option');
+                option1.value = person.name;
+                option1.textContent = person.name;
+                fromSelect.appendChild(option1);
+                
+                const option2 = document.createElement('option');
+                option2.value = person.name;
+                option2.textContent = person.name;
+                toSelect.appendChild(option2);
+            });
+        }
+
+        function loadStaffShifts(which) {
+            const staffName = which === 'from' 
+                ? document.getElementById('swapFromStaff').value 
+                : document.getElementById('swapToStaff').value;
+            
+            const selectId = which === 'from' ? 'swapFromShift' : 'swapToShift';
+            const select = document.getElementById(selectId);
+            
+            // Clear existing shifts
+            select.innerHTML = '<option value="">' + t('selectShift') + '</option>';
+            
+            if (!staffName) return;
+            
+            // Get date range filter values
+            const dateFromInput = document.getElementById('swapDateFrom').value;
+            const dateToInput = document.getElementById('swapDateTo').value;
+            
+            let dateFrom = null;
+            let dateTo = null;
+            
+            if (dateFromInput) {
+                dateFrom = new Date(dateFromInput);
+                dateFrom.setHours(0, 0, 0, 0);
+            }
+            if (dateToInput) {
+                dateTo = new Date(dateToInput);
+                dateTo.setHours(23, 59, 59, 999);
+            }
+            
+            // Find all shifts for this staff member
+            const shifts = [];
+            Object.keys(assignments).forEach(dateKey => {
+                const dayAssignments = assignments[dateKey];
+                
+                // Parse the date key (format: YYYY-M-D)
+                const [year, month, day] = dateKey.split('-').map(Number);
+                const shiftDate = new Date(year, month - 1, day);
+                
+                // Apply date range filter
+                if (dateFrom && shiftDate < dateFrom) return;
+                if (dateTo && shiftDate > dateTo) return;
+                
+                if (dayAssignments.Day === staffName) {
+                    shifts.push({ date: dateKey, type: 'Day', label: t('dayShift') });
+                }
+                if (dayAssignments.Night === staffName) {
+                    shifts.push({ date: dateKey, type: 'Night', label: t('nightShift') });
+                }
+                if (dayAssignments.ControlRoom === staffName) {
+                    shifts.push({ date: dateKey, type: 'ControlRoom', label: t('controlRoom') });
+                }
+                if (dayAssignments.Transports) {
+                    dayAssignments.Transports.forEach((transport, idx) => {
+                        Object.entries(transport.crew).forEach(([role, name]) => {
+                            if (name === staffName) {
+                                const transportType = transport.type === 'Ambulance' ? t('ambulance') : t('medicalTransport');
+                                shifts.push({ 
+                                    date: dateKey, 
+                                    type: 'Transport', 
+                                    label: `${transportType} (${role})`,
+                                    transportIndex: idx,
+                                    role: role
+                                });
+                            }
+                        });
+                    });
+                }
+            });
+            
+            // Sort shifts by date
+            shifts.sort((a, b) => {
+                const [yearA, monthA, dayA] = a.date.split('-').map(Number);
+                const [yearB, monthB, dayB] = b.date.split('-').map(Number);
+                const dateA = new Date(yearA, monthA - 1, dayA);
+                const dateB = new Date(yearB, monthB - 1, dayB);
+                return dateA - dateB;
+            });
+            
+            // Add options
+            shifts.forEach(shift => {
+                const option = document.createElement('option');
+                option.value = JSON.stringify(shift);
+                option.textContent = `${shift.date} - ${shift.label}`;
+                select.appendChild(option);
+            });
+            
+            // Show count of shifts found
+            if (shifts.length === 0) {
+                const option = document.createElement('option');
+                option.disabled = true;
+                option.textContent = currentLanguage === 'pl' ? 'Brak zmian w tym zakresie' : 'No shifts in this date range';
+                select.appendChild(option);
+            }
+        }
+
+        function createSwapRequest() {
+            const fromStaff = document.getElementById('swapFromStaff').value;
+            const fromShiftJson = document.getElementById('swapFromShift').value;
+            const toStaff = document.getElementById('swapToStaff').value;
+            const toShiftJson = document.getElementById('swapToShift').value;
+            const reason = document.getElementById('swapReason').value;
+            
+            if (!fromStaff || !fromShiftJson || !toStaff || !toShiftJson) {
+                alert(currentLanguage === 'pl' ? 'Proszę wypełnić wszystkie wymagane pola' : 'Please fill in all required fields');
+                return;
+            }
+            
+            if (fromStaff === toStaff) {
+                alert(currentLanguage === 'pl' ? 'Nie można zamienić zmian z samym sobą' : 'Cannot swap shifts with yourself');
+                return;
+            }
+            
+            const fromShift = JSON.parse(fromShiftJson);
+            const toShift = JSON.parse(toShiftJson);
+            
+            const swapRequest = {
+                id: Date.now(),
+                fromStaff: fromStaff,
+                fromShift: fromShift,
+                toStaff: toStaff,
+                toShift: toShift,
+                reason: reason,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+            
+            swapRequests.push(swapRequest);
+            saveSwapRequestsToStorage();
+            
+            // Clear form
+            document.getElementById('swapFromStaff').value = '';
+            document.getElementById('swapFromShift').innerHTML = '<option value="">' + t('selectShift') + '</option>';
+            document.getElementById('swapToStaff').value = '';
+            document.getElementById('swapToShift').innerHTML = '<option value="">' + t('selectShift') + '</option>';
+            document.getElementById('swapReason').value = '';
+            // Reset date range to default
+            initializeDateRange();
+            
+            displaySwapRequests();
+            alert(currentLanguage === 'pl' ? 'Prośba o zamianę została utworzona' : 'Swap request created successfully');
+        }
+
+        function displaySwapRequests() {
+            const container = document.getElementById('swapRequestsList');
+            const filter = document.getElementById('swapFilter').value;
+            
+            container.innerHTML = '';
+            
+            const filteredRequests = swapRequests.filter(req => {
+                if (filter === 'all') return true;
+                return req.status === filter;
+            });
+            
+            if (filteredRequests.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999;">' + 
+                    (currentLanguage === 'pl' ? 'Brak próśb o zamianę' : 'No swap requests') + '</p>';
+                return;
+            }
+            
+            // Sort by date, newest first
+            filteredRequests.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            filteredRequests.forEach(request => {
+                const div = document.createElement('div');
+                div.className = `swap-request ${request.status}`;
+                
+                const statusLabel = t(request.status);
+                const statusColor = request.status === 'pending' ? '#ff9800' : 
+                                   request.status === 'approved' ? '#4CAF50' : '#f44336';
+                
+                div.innerHTML = `
+                    <div class="swap-request-header">
+                        <span style="color: ${statusColor}; font-weight: bold;">${statusLabel.toUpperCase()}</span>
+                        <span style="float: right; font-size: 0.85em; color: #666;">
+                            ${new Date(request.createdAt).toLocaleDateString()}
+                        </span>
+                    </div>
+                    <div class="swap-request-details">
+                        <strong>${request.fromStaff}</strong> ${t('wants')} 
+                        <strong>${request.fromShift.date} (${request.fromShift.label})</strong>
+                        <br>
+                        ${t('inExchangeFor')} <strong>${request.toStaff}</strong>'s 
+                        <strong>${request.toShift.date} (${request.toShift.label})</strong>
+                    </div>
+                    ${request.reason ? `<div class="swap-request-details"><em>${t('reason')}: ${request.reason}</em></div>` : ''}
+                    <div class="swap-request-actions">
+                        ${request.status === 'pending' ? `
+                            <button onclick="approveSwapRequest(${request.id})" style="background-color: #4CAF50;">${t('approve')}</button>
+                            <button onclick="rejectSwapRequest(${request.id})" style="background-color: #f44336;">${t('reject')}</button>
+                        ` : ''}
+                        <button onclick="deleteSwapRequest(${request.id})" style="background-color: #999;">${t('delete')}</button>
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+
+        function approveSwapRequest(requestId) {
+            const request = swapRequests.find(r => r.id === requestId);
+            if (!request) return;
+            
+            // Perform the swap in assignments
+            const fromDate = request.fromShift.date;
+            const toDate = request.toShift.date;
+            
+            // Swap the shifts
+            if (request.fromShift.type === 'Transport' || request.toShift.type === 'Transport') {
+                // Handle transport swaps carefully
+                if (request.fromShift.type === 'Transport') {
+                    const transport = assignments[fromDate].Transports[request.fromShift.transportIndex];
+                    transport.crew[request.fromShift.role] = request.toStaff;
+                }
+                if (request.toShift.type === 'Transport') {
+                    const transport = assignments[toDate].Transports[request.toShift.transportIndex];
+                    transport.crew[request.toShift.role] = request.fromStaff;
+                }
+            } else {
+                // Regular shift swap
+                assignments[fromDate][request.fromShift.type] = request.toStaff;
+                assignments[toDate][request.toShift.type] = request.fromStaff;
+            }
+            
+            request.status = 'approved';
+            saveSwapRequestsToStorage();
+            saveAssignmentsToStorage();
+            updateCalendar();
+            displaySwapRequests();
+            
+            alert(currentLanguage === 'pl' ? 'Zamiana zatwierdzona i wykonana' : 'Swap approved and completed');
+        }
+
+        function rejectSwapRequest(requestId) {
+            const request = swapRequests.find(r => r.id === requestId);
+            if (!request) return;
+            
+            request.status = 'rejected';
+            saveSwapRequestsToStorage();
+            displaySwapRequests();
+            
+            alert(currentLanguage === 'pl' ? 'Zamiana odrzucona' : 'Swap request rejected');
+        }
+
+        function deleteSwapRequest(requestId) {
+            if (!confirm(currentLanguage === 'pl' ? 'Czy na pewno usunąć tę prośbę?' : 'Are you sure you want to delete this request?')) {
+                return;
+            }
+            
+            swapRequests = swapRequests.filter(r => r.id !== requestId);
+            saveSwapRequestsToStorage();
+            displaySwapRequests();
+        }
+
+        function loadSwapRequestsFromStorage() {
+            const saved = localStorage.getItem('swapRequests');
+            if (saved) {
+                swapRequests = JSON.parse(saved);
+            }
+        }
+
+        function saveSwapRequestsToStorage() {
+            localStorage.setItem('swapRequests', JSON.stringify(swapRequests));
+        }
+
+        // Staff Availability Calendar Functions
+        function showAvailabilityModal() {
+            document.getElementById('availabilityModal').style.display = 'block';
+            availabilityDate = new Date(currentDate); // Start with current calendar month
+            renderAvailabilityCalendar();
+        }
+
+        function closeAvailabilityModal() {
+            document.getElementById('availabilityModal').style.display = 'none';
+        }
+
+        function previousMonthAvailability() {
+            availabilityDate.setMonth(availabilityDate.getMonth() - 1);
+            renderAvailabilityCalendar();
+        }
+
+        function nextMonthAvailability() {
+            availabilityDate.setMonth(availabilityDate.getMonth() + 1);
+            renderAvailabilityCalendar();
+        }
+
+        function renderAvailabilityCalendar() {
+            const year = availabilityDate.getFullYear();
+            const month = availabilityDate.getMonth();
+            
+            // Update month display
+            const locale = currentLanguage === 'pl' ? 'pl-PL' : 'en-US';
+            document.getElementById('availabilityMonth').textContent = 
+                new Date(year, month).toLocaleDateString(locale, { month: 'long', year: 'numeric' });
+            
+            const filter = document.getElementById('availabilityFilter').value;
+            
+            // Get days in month
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const firstDay = new Date(year, month, 1).getDay();
+            
+            // Create table
+            let html = '<table class="availability-table"><thead><tr>';
+            html += '<th class="staff-name">' + t('staff') + '</th>';
+            
+            // Add day headers
+            const dayHeaders = translations[currentLanguage].days || ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const dayOfWeek = date.getDay();
+                const dayName = dayHeaders[dayOfWeek].substring(0, 3);
+                html += `<th class="day-header"><div class="day-number">${day}</div><div>${dayName}</div></th>`;
+            }
+            
+            html += '</tr></thead><tbody>';
+            
+            // Get filter setting
+            let filteredPeople = [...people];
+            
+            if (filter !== 'all') {
+                // Pre-calculate availability for filtering
+                filteredPeople = people.filter(person => {
+                    let hasAvailable = false;
+                    let hasUnavailable = false;
+                    
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const dateKey = `${year}-${month + 1}-${day}`;
+                        const status = getStaffAvailabilityStatus(person.name, dateKey);
+                        
+                        if (status === 'available') hasAvailable = true;
+                        else hasUnavailable = true;
+                    }
+                    
+                    if (filter === 'available' && hasAvailable) return true;
+                    if (filter === 'unavailable' && hasUnavailable && !hasAvailable) return true;
+                    
+                    return false;
+                });
+            }
+            
+            // Add rows for each staff member
+            filteredPeople.forEach(person => {
+                html += '<tr>';
+                html += `<td class="staff-name">${person.name}</td>`;
+                
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(year, month, day);
+                    const dateKey = `${year}-${month + 1}-${day}`;
+                    const dayOfWeek = date.getDay();
+                    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                    
+                    const status = getStaffAvailabilityStatus(person.name, dateKey);
+                    let cellClass = 'availability-cell';
+                    let title = '';
+                    
+                    if (status === 'on-leave') {
+                        cellClass += ' on-leave';
+                        title = t('onLeave');
+                    } else if (status === 'scheduled') {
+                        cellClass += ' scheduled';
+                        const shiftDetails = getStaffShiftDetails(person.name, dateKey);
+                        title = `${t('scheduled')}: ${shiftDetails}`;
+                    } else {
+                        cellClass += ' available';
+                        title = t('available');
+                        if (isWeekend) {
+                            cellClass += ' weekend';
+                        }
+                    }
+                    
+                    html += `<td class="${cellClass}" title="${title}">`;
+                    if (status === 'scheduled') {
+                        html += '✓';
+                    } else if (status === 'on-leave') {
+                        html += '✗';
+                    }
+                    html += '</td>';
+                }
+                
+                html += '</tr>';
+            });
+            
+            html += '</tbody></table>';
+            
+            if (filteredPeople.length === 0) {
+                html = '<p style="text-align: center; padding: 20px; color: #999;">' + 
+                    (currentLanguage === 'pl' ? 'Brak personelu do wyświetlenia' : 'No staff to display') + '</p>';
+            }
+            
+            document.getElementById('availabilityGrid').innerHTML = html;
+        }
+
+        function getStaffAvailabilityStatus(staffName, dateKey) {
+            // Check if on leave
+            const [year, month, day] = dateKey.split('-').map(Number);
+            const checkDate = new Date(year, month - 1, day);
+            
+            for (let leave of leaveRecords) {
+                if (leave.staffName === staffName) {
+                    const leaveStart = new Date(leave.startDate);
+                    const leaveEnd = new Date(leave.endDate);
+                    
+                    if (checkDate >= leaveStart && checkDate <= leaveEnd) {
+                        return 'on-leave';
+                    }
+                }
+            }
+            
+            // Check if scheduled for any shift
+            if (assignments[dateKey]) {
+                const dayAssignments = assignments[dateKey];
+                
+                if (dayAssignments.Day === staffName ||
+                    dayAssignments.Night === staffName ||
+                    dayAssignments.ControlRoom === staffName) {
+                    return 'scheduled';
+                }
+                
+                if (dayAssignments.Transports) {
+                    for (let transport of dayAssignments.Transports) {
+                        if (Object.values(transport.crew).includes(staffName)) {
+                            return 'scheduled';
+                        }
+                    }
+                }
+            }
+            
+            return 'available';
+        }
+
+        function getStaffShiftDetails(staffName, dateKey) {
+            if (!assignments[dateKey]) return '';
+            
+            const dayAssignments = assignments[dateKey];
+            const shifts = [];
+            
+            if (dayAssignments.Day === staffName) shifts.push(t('dayShift'));
+            if (dayAssignments.Night === staffName) shifts.push(t('nightShift'));
+            if (dayAssignments.ControlRoom === staffName) shifts.push(t('controlRoom'));
+            
+            if (dayAssignments.Transports) {
+                dayAssignments.Transports.forEach(transport => {
+                    Object.entries(transport.crew).forEach(([role, name]) => {
+                        if (name === staffName) {
+                            const transportType = transport.type === 'Ambulance' ? t('ambulance') : t('medicalTransport');
+                            shifts.push(`${transportType} (${role})`);
+                        }
+                    });
+                });
+            }
+            
+            return shifts.join(', ');
+        }
+
+        // Work Statistics Functions
+        function showStatsModal() {
+            document.getElementById('statsModal').style.display = 'block';
+            statsDate = new Date(currentDate); // Start with current calendar month
+            renderStatsTable();
+        }
+
+        function closeStatsModal() {
+            document.getElementById('statsModal').style.display = 'none';
+        }
+
+        function previousMonthStats() {
+            statsDate.setMonth(statsDate.getMonth() - 1);
+            renderStatsTable();
+        }
+
+        function nextMonthStats() {
+            statsDate.setMonth(statsDate.getMonth() + 1);
+            renderStatsTable();
+        }
+
+        function calculateStaffStats(staffName, year, month) {
+            const stats = {
+                name: staffName,
+                dayShifts: 0,
+                nightShifts: 0,
+                controlRoom: 0,
+                transports: 0,
+                totalDays: 0,
+                totalHours: 0
+            };
+
+            // Define hours per shift type
+            const HOURS_PER_DAY_SHIFT = 12;
+            const HOURS_PER_NIGHT_SHIFT = 12;
+            const HOURS_PER_CONTROL_SHIFT = 12;
+            const HOURS_PER_TRANSPORT = 8; // Average for transport shifts
+
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateKey = `${year}-${month + 1}-${day}`;
+                
+                if (assignments[dateKey]) {
+                    const dayAssignments = assignments[dateKey];
+                    let hasShiftThisDay = false;
+
+                    if (dayAssignments.Day === staffName) {
+                        stats.dayShifts++;
+                        stats.totalHours += HOURS_PER_DAY_SHIFT;
+                        hasShiftThisDay = true;
+                    }
+                    
+                    if (dayAssignments.Night === staffName) {
+                        stats.nightShifts++;
+                        stats.totalHours += HOURS_PER_NIGHT_SHIFT;
+                        hasShiftThisDay = true;
+                    }
+                    
+                    if (dayAssignments.ControlRoom === staffName) {
+                        stats.controlRoom++;
+                        stats.totalHours += HOURS_PER_CONTROL_SHIFT;
+                        hasShiftThisDay = true;
+                    }
+                    
+                    if (dayAssignments.Transports) {
+                        dayAssignments.Transports.forEach(transport => {
+                            if (Object.values(transport.crew).includes(staffName)) {
+                                stats.transports++;
+                                stats.totalHours += HOURS_PER_TRANSPORT;
+                                hasShiftThisDay = true;
+                            }
+                        });
+                    }
+
+                    if (hasShiftThisDay) {
+                        stats.totalDays++;
+                    }
+                }
+            }
+
+            return stats;
+        }
+
+        function renderStatsTable() {
+            const year = statsDate.getFullYear();
+            const month = statsDate.getMonth();
+            
+            // Update month display
+            const locale = currentLanguage === 'pl' ? 'pl-PL' : 'en-US';
+            document.getElementById('statsMonth').textContent = 
+                new Date(year, month).toLocaleDateString(locale, { month: 'long', year: 'numeric' });
+            
+            // Calculate stats for all staff
+            const allStats = people.map(person => calculateStaffStats(person.name, year, month));
+            
+            // Calculate summary statistics
+            const totalShifts = allStats.reduce((sum, s) => sum + s.dayShifts + s.nightShifts + s.controlRoom + s.transports, 0);
+            const totalHours = allStats.reduce((sum, s) => sum + s.totalHours, 0);
+            const avgShifts = people.length > 0 ? (totalShifts / people.length).toFixed(1) : 0;
+            const avgHours = people.length > 0 ? (totalHours / people.length).toFixed(1) : 0;
+            
+            // Update summary cards
+            document.getElementById('totalShiftsCount').textContent = totalShifts;
+            document.getElementById('totalHoursCount').textContent = totalHours;
+            document.getElementById('avgShiftsCount').textContent = avgShifts;
+            document.getElementById('avgHoursCount').textContent = avgHours;
+            
+            // Sort based on selected option
+            const sortBy = document.getElementById('statsSortBy').value;
+            sortStatsData(allStats, sortBy);
+            
+            // Render table
+            const tbody = document.getElementById('statsTableBody');
+            tbody.innerHTML = '';
+            
+            allStats.forEach(stat => {
+                const row = document.createElement('tr');
+                row.className = 'stats-row';
+                row.setAttribute('data-staff-name', stat.name.toLowerCase());
+                
+                row.innerHTML = `
+                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">${stat.name}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${stat.dayShifts}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${stat.nightShifts}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${stat.controlRoom}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${stat.transports}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: center; background-color: #e3f2fd; font-weight: bold;">${stat.totalDays}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: center; background-color: #f3e5f5; font-weight: bold;">${stat.totalHours}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+            
+            if (allStats.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="padding: 20px; text-align: center; color: #999;">' +
+                    (currentLanguage === 'pl' ? 'Brak danych' : 'No data available') + '</td></tr>';
+            }
+        }
+
+        function sortStatsData(stats, sortBy) {
+            switch(sortBy) {
+                case 'name':
+                    stats.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'days-desc':
+                    stats.sort((a, b) => b.totalDays - a.totalDays);
+                    break;
+                case 'days-asc':
+                    stats.sort((a, b) => a.totalDays - b.totalDays);
+                    break;
+                case 'hours-desc':
+                    stats.sort((a, b) => b.totalHours - a.totalHours);
+                    break;
+                case 'hours-asc':
+                    stats.sort((a, b) => a.totalHours - b.totalHours);
+                    break;
+            }
+        }
+
+        function filterStatsTable() {
+            const searchTerm = document.getElementById('statsSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('.stats-row');
+            
+            rows.forEach(row => {
+                const staffName = row.getAttribute('data-staff-name');
+                if (staffName.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function exportStatsToCSV() {
+            const year = statsDate.getFullYear();
+            const month = statsDate.getMonth();
+            
+            // Calculate stats for all staff
+            const allStats = people.map(person => calculateStaffStats(person.name, year, month));
+            
+            // Sort by name
+            allStats.sort((a, b) => a.name.localeCompare(b.name));
+            
+            // Create CSV content
+            let csv = 'Staff,Day Shifts,Night Shifts,Control Room,Transports,Total Days,Total Hours\n';
+            
+            allStats.forEach(stat => {
+                csv += `"${stat.name}",${stat.dayShifts},${stat.nightShifts},${stat.controlRoom},${stat.transports},${stat.totalDays},${stat.totalHours}\n`;
+            });
+            
+            // Add summary row
+            const totalShifts = allStats.reduce((sum, s) => sum + s.dayShifts + s.nightShifts + s.controlRoom + s.transports, 0);
+            const totalHours = allStats.reduce((sum, s) => sum + s.totalHours, 0);
+            csv += `\nTOTAL,,,,,,${totalHours}\n`;
+            csv += `AVERAGE,,,,,,${(totalHours / people.length).toFixed(1)}\n`;
+            
+            // Download CSV
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const monthName = new Date(year, month).toLocaleDateString('en-US', { month: 'long' });
+            a.href = url;
+            a.download = `work_statistics_${monthName}_${year}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
         // Export / Import functions
         function exportData() {
             const payload = {
                 people,
                 assignments,
-                transportsConfig
+                transportsConfig,
+                swapRequests
             };
             const dataStr = JSON.stringify(payload, null, 2);
             const blob = new Blob([dataStr], { type: 'application/json' });
@@ -1882,8 +3281,10 @@
                     if (obj.people) people = obj.people;
                     if (obj.assignments) assignments = obj.assignments;
                     if (obj.transportsConfig) transportsConfig = obj.transportsConfig;
+                    if (obj.swapRequests) swapRequests = obj.swapRequests;
                     savePeopleToStorage();
                     saveAssignmentsToStorage();
+                    saveSwapRequestsToStorage();
                     localStorage.setItem('transportsConfig', JSON.stringify(transportsConfig));
                     loadTransportsFromStorage();
                     updateCalendar();
