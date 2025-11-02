@@ -267,21 +267,153 @@
         }
 
         .staff-list {
-            margin-top: 20px;
+            margin-top: 30px;
         }
 
         .staff-search {
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             width: 100%;
             box-sizing: border-box;
-            padding: 6px;
-            font-size: 0.95em;
+            padding: 10px;
+            font-size: 1em;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+
+        .staff-search:focus {
+            outline: none;
+            border-color: #4CAF50;
         }
 
         .staff-table-container {
-            max-height: 220px;
+            max-height: 300px;
             overflow: auto;
             border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .staff-form-section {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .form-group input[type="text"],
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .form-group input[type="number"] {
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+            width: 80px;
+        }
+
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .role-checkbox {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background-color: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .role-checkbox:hover {
+            border-color: #4CAF50;
+            background-color: #f1f8f4;
+        }
+
+        .role-checkbox input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .preferences-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .add-staff-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .add-staff-btn:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        #staffTable {
+            font-size: 0.95em;
+        }
+
+        #staffTable thead th {
+            background-color: #f5f5f5;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            padding: 12px 8px;
+            font-weight: 600;
+        }
+
+        #staffTable tbody td {
+            padding: 10px 8px;
+            vertical-align: top;
+        }
+
+        #staffTable tbody tr:hover {
+            background-color: #f9f9f9;
         }
 
         .leave-record {
@@ -682,60 +814,102 @@
 
         <!-- Staff Management Modal -->
         <div id="staffModal" class="modal">
-            <div class="modal-content">
+            <div class="modal-content" style="max-width: 900px;">
                 <span class="close" onclick="closeStaffModal()">&times;</span>
-                <h2 data-i18n="manageStaff">Manage Staff</h2>
-                <div>
-                    <h3 data-i18n="addNewStaff">Add New Staff Member</h3>
-                    <div style="margin-bottom: 10px;">
-                        <input type="text" id="newPersonName" data-i18n="name" placeholder="Name" style="width: 500px;">
+                <h2 data-i18n="manageStaff" style="margin-bottom: 20px; color: #333;">👥 Manage Staff</h2>
+                
+                <!-- Add New Staff Form -->
+                <div class="staff-form-section">
+                    <h3 data-i18n="addNewStaff" style="margin-top: 0; color: #4CAF50;">➕ Add New Staff Member</h3>
+                    
+                    <div class="form-group">
+                        <label data-i18n="name">Name *</label>
+                        <input type="text" id="newPersonName" placeholder="Enter staff member name" required>
                     </div>
-                    <div style="margin-bottom: 10px;">
-                        <label><strong data-i18n="employmentType">Employment Type (Required):</strong></label><br>
-                        <select id="employmentType" style="width: 500px;" required>
+                    
+                    <div class="form-group">
+                        <label data-i18n="employmentType">Employment Type *</label>
+                        <select id="employmentType" required>
                             <option value="" data-i18n="selectEmploymentType">Select Employment Type</option>
                             <option value="permanent" data-i18n="permanent">Permanent</option>
                             <option value="contractor" data-i18n="contractor">Contractor</option>
                         </select>
                     </div>
-                    <div style="margin-bottom: 10px;">
-                        <label><strong data-i18n="roles">Roles (Select applicable roles):</strong></label><br>
-                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px;">
-                            <label><input type="checkbox" name="roles" value="Doctor"> <span data-i18n="doctor">Doctor</span></label>
-                            <label><input type="checkbox" name="roles" value="Driver"> <span data-i18n="driver">Driver</span></label>
-                            <label><input type="checkbox" name="roles" value="MedicSenior"> <span data-i18n="medicSenior">Medic Senior</span></label>
-                            <label><input type="checkbox" name="roles" value="MedicTrainee"> <span data-i18n="medicTrainee">Medic Trainee</span></label>
-                            <label><input type="checkbox" name="roles" value="Transport"> <span data-i18n="transport">Transport</span></label>
-                            <label><input type="checkbox" name="roles" value="Nightshift"> <span data-i18n="nightshift">Nightshift</span></label>
-                            <label><input type="checkbox" name="roles" value="Dayshift"> <span data-i18n="dayshift">Dayshift</span></label>
-                            <label><input type="checkbox" name="roles" value="ControlRoom"> <span data-i18n="controlRoom">Control Room</span></label>
+                    
+                    <div class="form-group">
+                        <label data-i18n="roles">Roles (Select applicable roles) *</label>
+                        <div class="roles-grid">
+                            <label class="role-checkbox">
+                                <input type="checkbox" name="roles" value="Doctor">
+                                <span data-i18n="doctor">Doctor</span>
+                            </label>
+                            <label class="role-checkbox">
+                                <input type="checkbox" name="roles" value="Driver">
+                                <span data-i18n="driver">Driver</span>
+                            </label>
+                            <label class="role-checkbox">
+                                <input type="checkbox" name="roles" value="MedicSenior">
+                                <span data-i18n="medicSenior">Medic Senior</span>
+                            </label>
+                            <label class="role-checkbox">
+                                <input type="checkbox" name="roles" value="MedicTrainee">
+                                <span data-i18n="medicTrainee">Medic Trainee</span>
+                            </label>
+                            <label class="role-checkbox">
+                                <input type="checkbox" name="roles" value="Transport">
+                                <span data-i18n="transport">Transport</span>
+                            </label>
+                            <label class="role-checkbox">
+                                <input type="checkbox" name="roles" value="Nightshift">
+                                <span data-i18n="nightshift">Nightshift</span>
+                            </label>
+                            <label class="role-checkbox">
+                                <input type="checkbox" name="roles" value="Dayshift">
+                                <span data-i18n="dayshift">Dayshift</span>
+                            </label>
+                            <label class="role-checkbox">
+                                <input type="checkbox" name="roles" value="ControlRoom">
+                                <span data-i18n="controlRoom">Control Room</span>
+                            </label>
                         </div>
                     </div>
-                    <div style="margin-bottom: 10px;">
-                        <label data-i18n="maxShiftsPerWeek">Maximum shifts per week:</label>
-                        <input type="number" id="maxShiftsPerWeek" value="4" min="1" max="7" style="width: 60px;">
+                    
+                    <div class="preferences-row">
+                        <div class="form-group">
+                            <label data-i18n="maxShiftsPerWeek">Maximum shifts per week:</label>
+                            <input type="number" id="maxShiftsPerWeek" value="4" min="1" max="7">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="minRestDays">Minimum rest days between shifts:</label>
+                            <input type="number" id="minRestDays" value="1" min="0" max="3">
+                        </div>
                     </div>
-                    <div style="margin-bottom: 10px;">
-                        <label data-i18n="minRestDays">Minimum rest days between shifts:</label>
-                        <input type="number" id="minRestDays" value="1" min="0" max="3" style="width: 60px;">
+                    
+                    <div class="form-group">
+                        <label class="role-checkbox">
+                            <input type="checkbox" id="weekdaysOnly">
+                            <span data-i18n="weekdaysOnly">Weekdays only (no weekend shifts)</span>
+                        </label>
                     </div>
-                    <div style="margin-bottom: 10px;">
-                        <label><input type="checkbox" id="weekdaysOnly"> <span data-i18n="weekdaysOnly">Weekdays only (no weekend shifts)</span></label>
-                    </div>
-                    <button onclick="addPerson()" data-i18n="addStaffMember">Add Staff Member</button>
+                    
+                    <button onclick="addPerson()" class="add-staff-btn" data-i18n="addStaffMember">
+                        ➕ Add Staff Member
+                    </button>
                 </div>
+                
+                <!-- Current Staff List -->
                 <div class="staff-list">
-                    <h3>Current Staff</h3>
-                    <input type="text" id="staffSearch" class="staff-search" placeholder="Search staff by name or role..." oninput="filterStaffList()" />
+                    <h3 style="color: #333; margin-bottom: 15px;">📋 Current Staff</h3>
+                    <input type="text" id="staffSearch" class="staff-search" placeholder="🔍 Search staff by name or role..." oninput="filterStaffList()" />
                     <div class="staff-table-container">
                         <table id="staffTable">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Employment</th>
-                                    <th>Roles</th>
-                                    <th>Preferences</th>
-                                    <th>Actions</th>
+                                    <th data-i18n="name">Name</th>
+                                    <th data-i18n="employment">Employment</th>
+                                    <th data-i18n="roles">Roles</th>
+                                    <th data-i18n="preferences">Preferences</th>
+                                    <th data-i18n="actions">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="staffTableBody">
@@ -766,8 +940,14 @@
                         </select>
                     </div>
                     <div style="margin-bottom: 20px;">
-                        <h3>Control Room</h3>
-                        <select id="controlRoomStaff" style="width: 100%;">
+                        <h3>Control Room Day</h3>
+                        <select id="controlRoomDayStaff" style="width: 100%;">
+                            <option value="">Select Staff Member</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3>Control Room Night</h3>
+                        <select id="controlRoomNightStaff" style="width: 100%;">
                             <option value="">Select Staff Member</option>
                         </select>
                     </div>
@@ -1459,7 +1639,7 @@
             }
 
             // Update day edit modal dropdowns
-            ['dayShiftStaff', 'nightShiftStaff', 'controlRoomStaff'].forEach(id => {
+            ['dayShiftStaff', 'nightShiftStaff', 'controlRoomDayStaff', 'controlRoomNightStaff'].forEach(id => {
                 const dropdown = document.getElementById(id);
                 if (dropdown && dropdown.options[0]) {
                     dropdown.options[0].textContent = t('selectStaffMember');
@@ -1632,7 +1812,7 @@
             document.getElementById('dayEditModalTitle').textContent = `Edit Shifts for ${dateStr}`;
 
             // Populate staff dropdowns
-            const dropdowns = ['dayShiftStaff', 'nightShiftStaff', 'controlRoomStaff'];
+            const dropdowns = ['dayShiftStaff', 'nightShiftStaff', 'controlRoomDayStaff', 'controlRoomNightStaff'];
             dropdowns.forEach(id => populateStaffDropdown(id, date));
 
             // Set current values
@@ -1641,7 +1821,13 @@
             
             if (dayAssignments.Day) document.getElementById('dayShiftStaff').value = dayAssignments.Day;
             if (dayAssignments.Night) document.getElementById('nightShiftStaff').value = dayAssignments.Night;
-            if (dayAssignments.ControlRoom) document.getElementById('controlRoomStaff').value = dayAssignments.ControlRoom;
+            // Support old format
+            if (dayAssignments.ControlRoom) {
+                document.getElementById('controlRoomDayStaff').value = dayAssignments.ControlRoom;
+            }
+            // New format
+            if (dayAssignments.ControlRoomDay) document.getElementById('controlRoomDayStaff').value = dayAssignments.ControlRoomDay;
+            if (dayAssignments.ControlRoomNight) document.getElementById('controlRoomNightStaff').value = dayAssignments.ControlRoomNight;
 
             updateTransportCrews(dateKey);
             modal.style.display = 'block';
@@ -1651,11 +1837,16 @@
             const dropdown = document.getElementById(dropdownId);
             dropdown.innerHTML = '<option value="">Select Staff Member</option>';
             
-            const eligibleStaff = getEligibleStaff(people, new Date(date));
-            eligibleStaff.forEach(person => {
+            // Show all staff members for manual editing
+            // Mark those on leave with indicator
+            people.forEach(person => {
                 const option = document.createElement('option');
                 option.value = person.name;
-                option.textContent = person.name;
+                
+                // Check if person is on leave
+                const onLeave = isPersonOnLeave(person.name, new Date(date));
+                option.textContent = onLeave ? `${person.name} (On Leave)` : person.name;
+                
                 dropdown.appendChild(option);
             });
         }
@@ -1772,7 +1963,10 @@
 
             assignments[dateKey].Day = document.getElementById('dayShiftStaff').value;
             assignments[dateKey].Night = document.getElementById('nightShiftStaff').value;
-            assignments[dateKey].ControlRoom = document.getElementById('controlRoomStaff').value;
+            assignments[dateKey].ControlRoomDay = document.getElementById('controlRoomDayStaff').value;
+            assignments[dateKey].ControlRoomNight = document.getElementById('controlRoomNightStaff').value;
+            // Remove old format
+            delete assignments[dateKey].ControlRoom;
 
             saveAssignmentsToStorage();
             updateCalendar();
@@ -1933,7 +2127,10 @@
 
                 addShift('Day', shifts.Day);
                 addShift('Night', shifts.Night);
+                // Support both old and new control room formats
                 addShift('ControlRoom', shifts.ControlRoom);
+                addShift('ControlRoomDay', shifts.ControlRoomDay);
+                addShift('ControlRoomNight', shifts.ControlRoomNight);
 
                 if (shifts.Transports) {
                     shifts.Transports.forEach(transport => {
@@ -2022,11 +2219,25 @@
                         nightShift.textContent = `N: ${assignments[dateKey].Night}`;
                         dayCell.appendChild(nightShift);
                     }
+                    // Display control room assignments (old format for backwards compatibility)
                     if (assignments[dateKey].ControlRoom) {
                         const controlShift = document.createElement('div');
                         controlShift.className = 'assignment control';
                         controlShift.textContent = `C: ${assignments[dateKey].ControlRoom}`;
                         dayCell.appendChild(controlShift);
+                    }
+                    // Display new format with separate day/night control room
+                    if (assignments[dateKey].ControlRoomDay) {
+                        const controlDayShift = document.createElement('div');
+                        controlDayShift.className = 'assignment control';
+                        controlDayShift.textContent = `CD: ${assignments[dateKey].ControlRoomDay}`;
+                        dayCell.appendChild(controlDayShift);
+                    }
+                    if (assignments[dateKey].ControlRoomNight) {
+                        const controlNightShift = document.createElement('div');
+                        controlNightShift.className = 'assignment control';
+                        controlNightShift.textContent = `CN: ${assignments[dateKey].ControlRoomNight}`;
+                        dayCell.appendChild(controlNightShift);
                     }
                     if (assignments[dateKey].Transports && assignments[dateKey].Transports.length) {
                         assignments[dateKey].Transports.forEach(transport => {
@@ -2225,7 +2436,6 @@
 
         // Shift assignment functions
         function assignShiftsForCurrentMonth() {
-        function assignShiftsForCurrentMonth() {
             function getStartOfWeek(date) {
                 const d = new Date(date);
                 const day = d.getDay();
@@ -2242,11 +2452,26 @@
             }
 
             function filterAndSortPeople(people, date) {
-                return people.filter(person => {
+                // Initialize monthlyShifts for all people first
+                people.forEach(person => {
+                    if (!person.monthlyShifts) {
+                        person.monthlyShifts = { total: 0, weekends: 0 };
+                    }
+                });
+                
+                // Try to filter by weekly shift limit
+                const filtered = people.filter(person => {
                     // Check weekly shift limit
-                    if (person.weeklyShifts >= person.availability.maxShiftsPerWeek) return false;
+                    const weeklyShifts = person.weeklyShifts || 0;
+                    if (weeklyShifts >= person.availability.maxShiftsPerWeek) return false;
                     return true;
-                }).sort((a, b) => {
+                });
+                
+                // If filtering results in empty array, use all people (ignore weekly limits)
+                const staffToSort = filtered.length > 0 ? filtered : people;
+                
+                // Sort by shifts worked
+                return staffToSort.sort((a, b) => {
                     if (date.getDay() === 0 || date.getDay() === 6) {
                         if (a.monthlyShifts.weekends !== b.monthlyShifts.weekends) {
                             return a.monthlyShifts.weekends - b.monthlyShifts.weekends;
@@ -2278,7 +2503,8 @@
                     }
                     assignments[dateKey].Day = null;
                     assignments[dateKey].Night = null;
-                    assignments[dateKey].ControlRoom = null;
+                    assignments[dateKey].ControlRoomDay = null;
+                    assignments[dateKey].ControlRoomNight = null;
                     assignments[dateKey].Transports = [];
                 }
 
@@ -2295,20 +2521,28 @@
                     const dateKey = `${year}-${month + 1}-${day}`;
                     const isWeekend = shiftDate.getDay() === 0 || shiftDate.getDay() === 6;
 
-                    // Get and assign day shift person
+                    // Get and assign day shift person (sort by least shifts worked)
                     let eligibleDay = getEligibleStaff(clinicalStaff, shiftDate);
                     if (!eligibleDay.length) {
                         clinicalStaff.forEach(p => p.weeklyShifts = 0);
                         eligibleDay = clinicalStaff;
                     }
+                    eligibleDay = filterAndSortPeople(eligibleDay, shiftDate);
+                    if (!eligibleDay.length) {
+                        throw new Error(`No eligible staff available for day shift on ${dateKey}`);
+                    }
                     const dayPerson = eligibleDay[0];
                     assignments[dateKey].Day = dayPerson.name;
 
-                    // Get and assign night shift person
+                    // Get and assign night shift person (sort by least shifts worked, excluding day person)
                     let eligibleNight = getEligibleStaff(clinicalStaff, shiftDate, dayPerson);
                     if (!eligibleNight.length) {
                         clinicalStaff.forEach(p => p.weeklyShifts = 0);
                         eligibleNight = getEligibleStaff(clinicalStaff, shiftDate, dayPerson);
+                    }
+                    eligibleNight = filterAndSortPeople(eligibleNight, shiftDate);
+                    if (!eligibleNight.length) {
+                        throw new Error(`No eligible staff available for night shift on ${dateKey}`);
                     }
                     const nightPerson = eligibleNight[0];
                     assignments[dateKey].Night = nightPerson.name;
@@ -2332,11 +2566,34 @@
                         person !== dayPerson && person !== nightPerson
                     );
 
-                    // Assign control room staff first
-                    const controlStaff = transportStaff.find(p => p.roles.includes('ControlRoom'));
-                    if (controlStaff) {
-                        assignments[dateKey].ControlRoom = controlStaff.name;
-                        updatePersonCounts(controlStaff, shiftDate, isWeekend);
+                    // Get control room staff
+                    const controlRoomStaff = transportStaff.filter(p => p.roles.includes('ControlRoom'));
+                    
+                    // Assign day control room staff
+                    if (controlRoomStaff.length > 0) {
+                        const sortedControlDay = filterAndSortPeople(controlRoomStaff, shiftDate);
+                        if (sortedControlDay.length > 0) {
+                            const controlDayPerson = sortedControlDay[0];
+                            assignments[dateKey].ControlRoomDay = controlDayPerson.name;
+                            updatePersonCounts(controlDayPerson, shiftDate, isWeekend);
+                            
+                            // Assign night control room staff (different person if possible)
+                            const controlNightEligible = controlRoomStaff.filter(p => p !== controlDayPerson);
+                            if (controlNightEligible.length > 0) {
+                                const sortedControlNight = filterAndSortPeople(controlNightEligible, shiftDate);
+                                if (sortedControlNight.length > 0) {
+                                    const controlNightPerson = sortedControlNight[0];
+                                    assignments[dateKey].ControlRoomNight = controlNightPerson.name;
+                                    updatePersonCounts(controlNightPerson, shiftDate, isWeekend);
+                                } else {
+                                    // If no other eligible person, assign the day person to night too
+                                    assignments[dateKey].ControlRoomNight = controlDayPerson.name;
+                                }
+                            } else {
+                                // If only one control room person available, assign them to both shifts
+                                assignments[dateKey].ControlRoomNight = controlDayPerson.name;
+                            }
+                        }
                     }
 
                     // Handle ambulance assignments
@@ -2439,34 +2696,6 @@
                 console.error('Error assigning shifts:', error);
                 alert('An error occurred while assigning shifts: ' + error.message);
                 return false;
-            }
-        }
-            const drivers = staff.filter(p => p.roles.includes('Driver'));
-            const transports = staff.filter(p => p.roles.includes('Transport'));
-            const medics = staff.filter(p => 
-                p.roles.includes('MedicSenior') || p.roles.includes('MedicTrainee')
-            );
-
-            if (drivers.length && transports.length && medics.length) {
-                const crew = {
-                    driver: drivers[0],
-                    transport: transports[0],
-                    medic: medics[0]
-                };
-
-                assignments[dateKey].Transports.push({
-                    type: 'MedicalTransport',
-                    crew: {
-                        Driver: crew.driver.name,
-                        Transport: crew.transport.name,
-                        Medic: crew.medic.name
-                    }
-                });
-
-                Object.values(crew).forEach(person => {
-                    updatePersonCounts(person, date, isWeekend);
-                    staff.splice(staff.indexOf(person), 1);
-                });
             }
         }
 
