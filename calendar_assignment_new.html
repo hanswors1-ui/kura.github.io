@@ -1,0 +1,1978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Shift Planner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-top: 20px;
+        }
+
+        .calendar-header {
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            background-color: #f0f0f0;
+        }
+
+        .calendar-day {
+            border: 1px solid #ddd;
+            height: 150px; /* Fixed height */
+            padding: 5px;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.2s;
+            overflow-y: auto;
+        }
+
+        .calendar-day:not(.empty):hover {
+            background-color: #f0f0f0;
+        }
+
+        .calendar-day.empty {
+            cursor: default;
+            background-color: #f9f9f9;
+        }
+
+        .calendar-day .day-number {
+            font-weight: bold;
+            margin-bottom: 3px;
+            font-size: 1em;
+            flex-shrink: 0; /* Prevent day number from shrinking */
+            position: sticky;
+            top: 0;
+            background-color: inherit;
+            z-index: 1;
+            padding-bottom: 3px;
+        }
+
+        .calendar-day .shift-info {
+            font-size: 0.9em;
+            line-height: 1.4;
+            margin-top: 5px;
+            overflow-y: auto; /* Enable vertical scrolling */
+            flex-grow: 1; /* Take up remaining space */
+            scrollbar-width: thin; /* For Firefox */
+            scrollbar-color: #999 #f1f1f1; /* For Firefox */
+        }
+
+        /* Webkit scrollbar styling */
+        .calendar-day .shift-info::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .calendar-day .shift-info::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .calendar-day .shift-info::-webkit-scrollbar-thumb {
+            background: #999;
+            border-radius: 3px;
+        }
+
+        .calendar-day .shift-info::-webkit-scrollbar-thumb:hover {
+            background: #777;
+        }
+
+        .calendar-day.weekend {
+            background-color: #f9f9f9;
+        }
+
+        .calendar-day.today {
+            border: 2px solid #4CAF50;
+        }
+
+        .calendar-day.filtered {
+            background-color: #e6f3ff;
+        }
+
+        .assignment {
+            margin: 2px 0;
+            padding: 3px 5px;
+            border-radius: 3px;
+            font-size: 0.85em;
+            word-wrap: break-word;
+            line-height: 1.3;
+        }
+
+        .assignment.day {
+            background-color: #e3f2fd;
+            border: 1px solid #90caf9;
+        }
+
+        .assignment.night {
+            background-color: #fff3e0;
+            border: 1px solid #ffcc80;
+        }
+
+        .assignment.control {
+            background-color: #e8eaf6;
+            border: 1px solid #9fa8da;
+        }
+
+        .assignment.ambulance {
+            background-color: #ffebee;
+            border: 1px solid #ef9a9a;
+        }
+
+        .assignment.medical {
+            background-color: #e8f5e9;
+            border: 1px solid #a5d6a7;
+        }
+
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%;
+            min-width: 600px;
+            max-width: 800px;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            z-index: 1001;
+        }
+        
+        .transport-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .transport-buttons button {
+            flex: 1;
+            padding: 8px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .transport-buttons button:hover {
+            background-color: #45a049;
+        }
+
+        .close {
+            float: right;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        button {
+            padding: 8px 16px;
+            margin: 0 5px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .staff-list {
+            margin-top: 20px;
+        }
+
+        .staff-search {
+            margin-bottom: 8px;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 6px;
+            font-size: 0.95em;
+        }
+
+        .staff-table-container {
+            max-height: 220px;
+            overflow: auto;
+            border: 1px solid #ddd;
+        }
+
+        .leave-record {
+            margin-bottom: 10px;
+        }
+
+        .leave-record button {
+            margin-top: 5px;
+            padding: 2px 8px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .leave-record button:hover {
+            background-color: #cc0000;
+        }
+
+        #leaveList {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 data-i18n="title">Medical Shift Planner</h1>
+
+        <div class="controls">
+            <div>
+                <button onclick="previousMonth()" data-i18n="previousMonth">Previous Month</button>
+                <span id="currentMonth" style="margin: 0 10px; font-weight: bold;"></span>
+                <button onclick="nextMonth()" data-i18n="nextMonth">Next Month</button>
+            </div>
+            <div>
+                <button onclick="showStaffModal()" data-i18n="manageStaff">Manage Staff</button>
+                <button onclick="showLeaveModal()" data-i18n="manageLeave">Manage Leave</button>
+                <button onclick="showAssignmentModal()" data-i18n="assignShifts">Assign Shifts</button>
+                <button onclick="showFilterModal()" data-i18n="filterView">Filter View</button>
+                <button onclick="exportData()" data-i18n="exportData">Export Data</button>
+                <button onclick="document.getElementById('importFile').click();" data-i18n="importData">Import Data</button>
+                <button onclick="toggleLanguage()" id="langToggle" style="background-color: #2196F3;">EN/PL</button>
+            </div>
+        </div>
+
+    <!-- Hidden file input for import -->
+    <input type="file" id="importFile" accept="application/json" style="display:none" onchange="handleImportFile(event)">
+
+        <div id="calendar" class="calendar">
+            <!-- Calendar will be populated by JavaScript -->
+        </div>
+
+        <!-- Staff Management Modal -->
+        <div id="staffModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeStaffModal()">&times;</span>
+                <h2 data-i18n="manageStaff">Manage Staff</h2>
+                <div>
+                    <h3 data-i18n="addNewStaff">Add New Staff Member</h3>
+                    <div style="margin-bottom: 10px;">
+                        <input type="text" id="newPersonName" data-i18n="name" placeholder="Name" style="width: 500px;">
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label><strong data-i18n="employmentType">Employment Type (Required):</strong></label><br>
+                        <select id="employmentType" style="width: 500px;" required>
+                            <option value="" data-i18n="selectEmploymentType">Select Employment Type</option>
+                            <option value="permanent" data-i18n="permanent">Permanent</option>
+                            <option value="contractor" data-i18n="contractor">Contractor</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label><strong data-i18n="roles">Roles (Select applicable roles):</strong></label><br>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px;">
+                            <label><input type="checkbox" name="roles" value="Doctor"> <span data-i18n="doctor">Doctor</span></label>
+                            <label><input type="checkbox" name="roles" value="Driver"> <span data-i18n="driver">Driver</span></label>
+                            <label><input type="checkbox" name="roles" value="MedicSenior"> <span data-i18n="medicSenior">Medic Senior</span></label>
+                            <label><input type="checkbox" name="roles" value="MedicTrainee"> <span data-i18n="medicTrainee">Medic Trainee</span></label>
+                            <label><input type="checkbox" name="roles" value="Transport"> <span data-i18n="transport">Transport</span></label>
+                            <label><input type="checkbox" name="roles" value="Nightshift"> <span data-i18n="nightshift">Nightshift</span></label>
+                            <label><input type="checkbox" name="roles" value="Dayshift"> <span data-i18n="dayshift">Dayshift</span></label>
+                            <label><input type="checkbox" name="roles" value="ControlRoom"> <span data-i18n="controlRoom">Control Room</span></label>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label data-i18n="maxShiftsPerWeek">Maximum shifts per week:</label>
+                        <input type="number" id="maxShiftsPerWeek" value="4" min="1" max="7" style="width: 60px;">
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label data-i18n="minRestDays">Minimum rest days between shifts:</label>
+                        <input type="number" id="minRestDays" value="1" min="0" max="3" style="width: 60px;">
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label><input type="checkbox" id="weekdaysOnly"> <span data-i18n="weekdaysOnly">Weekdays only (no weekend shifts)</span></label>
+                    </div>
+                    <button onclick="addPerson()" data-i18n="addStaffMember">Add Staff Member</button>
+                </div>
+                <div class="staff-list">
+                    <h3>Current Staff</h3>
+                    <input type="text" id="staffSearch" class="staff-search" placeholder="Search staff by name or role..." oninput="filterStaffList()" />
+                    <div class="staff-table-container">
+                        <table id="staffTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Employment</th>
+                                    <th>Roles</th>
+                                    <th>Preferences</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staffTableBody">
+                                <!-- Staff list will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Edit Modal -->
+        <div id="dayEditModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeDayEditModal()">&times;</span>
+                <h2 id="dayEditModalTitle">Edit Shifts</h2>
+                <div id="dayEditForm">
+                    <div style="margin-bottom: 20px;">
+                        <h3>Day Shift</h3>
+                        <select id="dayShiftStaff" style="width: 100%;">
+                            <option value="">Select Staff Member</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3>Night Shift</h3>
+                        <select id="nightShiftStaff" style="width: 100%;">
+                            <option value="">Select Staff Member</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3>Control Room</h3>
+                        <select id="controlRoomStaff" style="width: 100%;">
+                            <option value="">Select Staff Member</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3>Transports</h3>
+                        <div id="transportAssignments" style="max-height: 300px; overflow-y: auto;"></div>
+                        <div class="transport-buttons">
+                            <button onclick="addTransportCrew('Ambulance')" data-i18n="addAmbulanceCrew">Add Ambulance Crew</button>
+                            <button onclick="addTransportCrew('Medical Transport')" data-i18n="addMedicalTransport">Add Medical Transport</button>
+                        </div>
+                    </div>
+                    <button onclick="saveDayEdits()" data-i18n="saveChanges">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Staff Filter Modal -->
+        <div id="filterModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeFilterModal()">&times;</span>
+                <h2>Filter Shifts</h2>
+                <div>
+                    <div style="margin-bottom: 15px;">
+                        <label><strong>Staff Member:</strong></label>
+                        <select id="filterStaff" style="width: 100%;">
+                            <option value="">All Staff Members</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label><strong>Shift Type:</strong></label>
+                        <select id="filterShiftType" style="width: 100%;">
+                            <option value="">All Shifts</option>
+                            <option value="Day">Day Shifts</option>
+                            <option value="Night">Night Shifts</option>
+                            <option value="ControlRoom">Control Room</option>
+                            <option value="Transport">Transports</option>
+                        </select>
+                    </div>
+                    <button onclick="applyFilter()">Apply Filter</button>
+                    <button onclick="clearFilter()" style="margin-left: 10px;">Clear Filter</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leave Management Modal -->
+        <div id="leaveModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeLeaveModal()">&times;</span>
+                <h2>Manage Leave</h2>
+                <div>
+                    <h3>Add Leave Period</h3>
+                    <div style="margin-bottom: 10px;">
+                        <label><strong>Staff Member:</strong></label><br>
+                        <select id="leaveStaffSelect" style="width: 100%;">
+                            <!-- Will be populated with staff members -->
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label><strong>Leave Type:</strong></label><br>
+                        <select id="leaveType" style="width: 100%;">
+                            <option value="vacation">Vacation</option>
+                            <option value="sickleave">Sick Leave</option>
+                            <option value="training">Training</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label><strong>Start Date:</strong></label><br>
+                        <input type="date" id="leaveStartDate" style="width: 100%;">
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label><strong>End Date:</strong></label><br>
+                        <input type="date" id="leaveEndDate" style="width: 100%;">
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label><strong>Notes:</strong></label><br>
+                        <textarea id="leaveNotes" style="width: 100%; height: 60px;"></textarea>
+                    </div>
+                    <button onclick="addLeave()">Add Leave</button>
+                </div>
+                <div style="margin-top: 20px;">
+                    <h3>Current & Upcoming Leave</h3>
+                    <div id="leaveList" style="margin-top: 10px;">
+                        <!-- Will be populated with leave entries -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shift Assignment Modal -->
+        <div id="assignmentModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeAssignmentModal()">&times;</span>
+                <h2>Assign Shifts</h2>
+                <div style="margin-bottom:10px;">
+                    <button onclick="assignShiftsForCurrentMonth()">Auto-Assign Shifts for Current Month</button>
+                </div>
+
+                <div style="margin-top:10px;">
+                    <h3 title="Set the number of vehicles available each day. The assignment algorithm will try to allocate transport staff up to these limits." data-i18n="transportsAvailable">Transports available (per day) <span title="Number of vehicles available per day — affects how many transport staff will be assigned.">?</span></h3>
+                    <label data-i18n="ambulances">Ambulances:</label>
+                    <input type="number" id="ambulanceCount" value="1" min="0" style="width:80px; margin-right:10px;">
+                    <label data-i18n="medicalTransports">Medical transports:</label>
+                    <input type="number" id="medicalTransportCount" value="1" min="0" style="width:80px; margin-left:10px;">
+                    <button onclick="saveTransportsToStorage()" style="margin-left:10px;" data-i18n="saveTransports">Save transports</button>
+                </div>
+
+                <div id="assignmentResults" style="margin-top: 16px; font-size:0.95em; color:#333;">
+                    <!-- Assignment results and configured transports will be shown here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Staff Modal -->
+        <div id="editStaffModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeEditPersonModal()">&times;</span>
+                <h2>Edit Staff Member</h2>
+                <div>
+                    <div style="margin-bottom: 10px;">
+                        <input type="text" id="editPersonName" placeholder="Name" style="width: 200px;">
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label><strong>Employment Type (Required):</strong></label><br>
+                        <select id="editEmploymentType" style="width: 200px;" required>
+                            <option value="">Select Employment Type</option>
+                            <option value="permanent">Permanent</option>
+                            <option value="contractor">Contractor</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label><strong>Roles (Select applicable roles):</strong></label><br>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px;">
+                            <label><input type="checkbox" name="editRoles" value="Doctor"> Doctor</label>
+                            <label><input type="checkbox" name="editRoles" value="Driver"> Driver</label>
+                            <label><input type="checkbox" name="editRoles" value="MedicSenior"> Medic Senior</label>
+                            <label><input type="checkbox" name="editRoles" value="MedicTrainee"> Medic Trainee</label>
+                            <label><input type="checkbox" name="editRoles" value="Transport"> Transport</label>
+                            <label><input type="checkbox" name="editRoles" value="Nightshift"> Nightshift</label>
+                            <label><input type="checkbox" name="editRoles" value="Dayshift"> Dayshift</label>
+                            <label><input type="checkbox" name="editRoles" value="ControlRoom"> Control Room</label>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label>Maximum shifts per week:</label>
+                        <input type="number" id="editMaxShiftsPerWeek" value="4" min="1" max="7" style="width: 60px;">
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label>Minimum rest days between shifts:</label>
+                        <input type="number" id="editMinRestDays" value="1" min="0" max="3" style="width: 60px;">
+                    </div>
+                    <input type="hidden" id="editPersonIndex">
+                    <button onclick="updatePerson()">Update Staff Member</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Language and translations
+        let currentLanguage = localStorage.getItem('language') || 'en';
+        
+        const translations = {
+            en: {
+                title: 'Medical Shift Planner',
+                previousMonth: 'Previous Month',
+                nextMonth: 'Next Month',
+                manageStaff: 'Manage Staff',
+                manageLeave: 'Manage Leave',
+                assignShifts: 'Assign Shifts',
+                filterView: 'Filter View',
+                exportData: 'Export Data',
+                importData: 'Import Data',
+                runTests: 'Run Tests',
+                addNewStaff: 'Add New Staff Member',
+                name: 'Name',
+                employmentType: 'Employment Type (Required)',
+                selectEmploymentType: 'Select Employment Type',
+                permanent: 'Permanent',
+                contractor: 'Contractor',
+                roles: 'Roles (Select applicable roles)',
+                doctor: 'Doctor',
+                medic: 'Medic',
+                driver: 'Driver',
+                medicSenior: 'Medic Senior',
+                medicTrainee: 'Medic Trainee',
+                transport: 'Transport',
+                nightshift: 'Nightshift',
+                dayshift: 'Dayshift',
+                controlRoom: 'Control Room',
+                maxShiftsPerWeek: 'Maximum shifts per week',
+                minRestDays: 'Minimum rest days between shifts',
+                weekdaysOnly: 'Weekdays only (no weekend shifts)',
+                addStaffMember: 'Add Staff Member',
+                currentStaff: 'Current Staff',
+                searchStaff: 'Search staff by name or role...',
+                employment: 'Employment',
+                preferences: 'Preferences',
+                actions: 'Actions',
+                edit: 'Edit',
+                remove: 'Remove',
+                editShifts: 'Edit Shifts',
+                editShiftsFor: 'Edit Shifts for',
+                dayShift: 'Day Shift',
+                nightShift: 'Night Shift',
+                transports: 'Transports',
+                addAmbulanceCrew: 'Add Ambulance Crew',
+                addMedicalTransport: 'Add Medical Transport',
+                saveChanges: 'Save Changes',
+                filterShifts: 'Filter Shifts',
+                staffMember: 'Staff Member',
+                allStaffMembers: 'All Staff Members',
+                shiftType: 'Shift Type',
+                allShifts: 'All Shifts',
+                dayShifts: 'Day Shifts',
+                nightShifts: 'Night Shifts',
+                applyFilter: 'Apply Filter',
+                clearFilter: 'Clear Filter',
+                addLeavePeriod: 'Add Leave Period',
+                leaveType: 'Leave Type',
+                vacation: 'Vacation',
+                sickleave: 'Sick Leave',
+                training: 'Training',
+                other: 'Other',
+                startDate: 'Start Date',
+                endDate: 'End Date',
+                notes: 'Notes',
+                addLeave: 'Add Leave',
+                currentUpcomingLeave: 'Current & Upcoming Leave',
+                delete: 'Delete',
+                autoAssignShifts: 'Auto-Assign Shifts for Current Month',
+                transportsAvailable: 'Transports available (per day)',
+                ambulances: 'Ambulances',
+                medicalTransports: 'Medical transports',
+                saveTransports: 'Save transports',
+                editStaffMember: 'Edit Staff Member',
+                updateStaffMember: 'Update Staff Member',
+                selectStaffMember: 'Select Staff Member',
+                selectDoctor: 'Select Doctor',
+                selectMedic: 'Select Medic',
+                selectDriver: 'Select Driver',
+                ambulance: 'Ambulance',
+                medicalTransport: 'Medical Transport'
+            },
+            pl: {
+                title: 'Planer Zmian Medycznych',
+                previousMonth: 'Poprzedni Miesiąc',
+                nextMonth: 'Następny Miesiąc',
+                manageStaff: 'Zarządzaj Personelem',
+                manageLeave: 'Zarządzaj Urlopami',
+                assignShifts: 'Przypisz Zmiany',
+                filterView: 'Filtruj Widok',
+                exportData: 'Eksportuj Dane',
+                importData: 'Importuj Dane',
+                runTests: 'Uruchom Testy',
+                addNewStaff: 'Dodaj Nowego Pracownika',
+                name: 'Imię i nazwisko',
+                employmentType: 'Typ Zatrudnienia (Wymagane)',
+                selectEmploymentType: 'Wybierz Typ Zatrudnienia',
+                permanent: 'Stały',
+                contractor: 'Kontrakt',
+                roles: 'Role (Wybierz odpowiednie role)',
+                doctor: 'Lekarz',
+                medic: 'Ratownik',
+                driver: 'Kierowca',
+                medicSenior: 'Ratownik Starszy',
+                medicTrainee: 'Ratownik Stażysta',
+                transport: 'Transport',
+                nightshift: 'Zmiana Nocna',
+                dayshift: 'Zmiana Dzienna',
+                controlRoom: 'Dyspozytornia',
+                maxShiftsPerWeek: 'Maksymalna liczba zmian w tygodniu',
+                minRestDays: 'Minimalne dni odpoczynku między zmianami',
+                weekdaysOnly: 'Tylko dni powszednie (bez weekendów)',
+                addStaffMember: 'Dodaj Pracownika',
+                currentStaff: 'Obecny Personel',
+                searchStaff: 'Szukaj po imieniu lub roli...',
+                employment: 'Zatrudnienie',
+                preferences: 'Preferencje',
+                actions: 'Akcje',
+                edit: 'Edytuj',
+                remove: 'Usuń',
+                editShifts: 'Edytuj Zmiany',
+                editShiftsFor: 'Edytuj Zmiany dla',
+                dayShift: 'Zmiana Dzienna',
+                nightShift: 'Zmiana Nocna',
+                transports: 'Transporty',
+                addAmbulanceCrew: 'Dodaj Zespół Ambulansu',
+                addMedicalTransport: 'Dodaj Transport Medyczny',
+                saveChanges: 'Zapisz Zmiany',
+                filterShifts: 'Filtruj Zmiany',
+                staffMember: 'Pracownik',
+                allStaffMembers: 'Wszyscy Pracownicy',
+                shiftType: 'Typ Zmiany',
+                allShifts: 'Wszystkie Zmiany',
+                dayShifts: 'Zmiany Dzienne',
+                nightShifts: 'Zmiany Nocne',
+                applyFilter: 'Zastosuj Filtr',
+                clearFilter: 'Wyczyść Filtr',
+                addLeavePeriod: 'Dodaj Okres Urlopu',
+                leaveType: 'Typ Urlopu',
+                vacation: 'Urlop',
+                sickleave: 'Zwolnienie Lekarskie',
+                training: 'Szkolenie',
+                other: 'Inne',
+                startDate: 'Data Rozpoczęcia',
+                endDate: 'Data Zakończenia',
+                notes: 'Notatki',
+                addLeave: 'Dodaj Urlop',
+                currentUpcomingLeave: 'Obecne i Nadchodzące Urlopy',
+                delete: 'Usuń',
+                autoAssignShifts: 'Automatycznie Przypisz Zmiany na Bieżący Miesiąc',
+                transportsAvailable: 'Dostępne transporty (dziennie)',
+                ambulances: 'Ambulanse',
+                medicalTransports: 'Transporty medyczne',
+                saveTransports: 'Zapisz transporty',
+                editStaffMember: 'Edytuj Pracownika',
+                updateStaffMember: 'Zaktualizuj Pracownika',
+                selectStaffMember: 'Wybierz Pracownika',
+                selectDoctor: 'Wybierz Lekarza',
+                selectMedic: 'Wybierz Ratownika',
+                selectDriver: 'Wybierz Kierowcę',
+                ambulance: 'Ambulans',
+                medicalTransport: 'Transport Medyczny'
+            }
+        };
+
+        function t(key) {
+            return translations[currentLanguage][key] || key;
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'pl' : 'en';
+            localStorage.setItem('language', currentLanguage);
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            // Update title
+            document.querySelector('h1').textContent = t('title');
+            
+            // Update all elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (el.tagName === 'INPUT' && el.type === 'text') {
+                    el.placeholder = t(key);
+                } else if (el.tagName === 'OPTION') {
+                    el.textContent = t(key);
+                } else if (el.tagName === 'LABEL') {
+                    // Handle labels with nested elements
+                    const strong = el.querySelector('strong');
+                    if (strong) {
+                        strong.textContent = t(key);
+                    } else {
+                        el.textContent = t(key);
+                    }
+                } else {
+                    el.textContent = t(key);
+                }
+            });
+            
+            // Update modals and forms that weren't tagged
+            updateModalTranslations();
+            
+            // Update calendar and other dynamic content
+            updateCalendar();
+        }
+
+        function updateModalTranslations() {
+            // Update Staff Modal elements
+            const staffSearchInput = document.getElementById('staffSearch');
+            if (staffSearchInput) staffSearchInput.placeholder = t('searchStaff');
+
+            // Update Leave Modal  "Select Staff Member" option
+            const leaveStaffSelect = document.getElementById('leaveStaffSelect');
+            if (leaveStaffSelect && leaveStaffSelect.options[0]) {
+                leaveStaffSelect.options[0].textContent = t('selectStaffMember');
+            }
+
+            // Update day edit modal dropdowns
+            ['dayShiftStaff', 'nightShiftStaff', 'controlRoomStaff'].forEach(id => {
+                const dropdown = document.getElementById(id);
+                if (dropdown && dropdown.options[0]) {
+                    dropdown.options[0].textContent = t('selectStaffMember');
+                }
+            });
+
+            // Update Filter Modal dropdown
+            const filterStaff = document.getElementById('filterStaff');
+            if (filterStaff && filterStaff.options[0]) {
+                filterStaff.options[0].textContent = t('allStaffMembers');
+            }
+        }
+
+        // Global variables
+        let currentDate = new Date();
+        let people = [];
+        let assignments = {};
+        let leaveRecords = [];
+        let currentFilter = {
+            staffMember: '',
+            shiftType: ''
+        };
+        let editingDate = null;
+
+        // Initialize the application
+        window.onload = function() {
+            loadPeopleFromStorage();
+            loadAssignmentsFromStorage();
+            loadTransportsFromStorage();
+            loadLeaveFromStorage();
+            updateLanguage();
+            updateCalendar();
+        };
+
+        function loadLeaveFromStorage() {
+            const storedLeave = localStorage.getItem('leaveRecords');
+            if (storedLeave) {
+                leaveRecords = JSON.parse(storedLeave);
+            }
+        }
+
+        function saveLeaveToStorage() {
+            localStorage.setItem('leaveRecords', JSON.stringify(leaveRecords));
+        }
+
+        function showLeaveModal() {
+            const modal = document.getElementById('leaveModal');
+            const staffSelect = document.getElementById('leaveStaffSelect');
+            
+            // Clear and populate staff select
+            staffSelect.innerHTML = '<option value="">Select Staff Member</option>';
+            people.forEach(person => {
+                const option = document.createElement('option');
+                option.value = person.name;
+                option.textContent = person.name;
+                staffSelect.appendChild(option);
+            });
+
+            // Set default dates
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('leaveStartDate').value = today;
+            document.getElementById('leaveEndDate').value = today;
+            
+            // Update leave list
+            updateLeaveList();
+            
+            modal.style.display = 'block';
+        }
+
+        function closeLeaveModal() {
+            document.getElementById('leaveModal').style.display = 'none';
+        }
+
+        function addLeave() {
+            const staffName = document.getElementById('leaveStaffSelect').value;
+            const leaveType = document.getElementById('leaveType').value;
+            const startDate = document.getElementById('leaveStartDate').value;
+            const endDate = document.getElementById('leaveEndDate').value;
+            const notes = document.getElementById('leaveNotes').value;
+
+            if (!staffName || !leaveType || !startDate || !endDate) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            if (new Date(endDate) < new Date(startDate)) {
+                alert('End date cannot be before start date');
+                return;
+            }
+
+            const leaveRecord = {
+                staffName,
+                leaveType,
+                startDate,
+                endDate,
+                notes,
+                dateAdded: new Date().toISOString()
+            };
+
+            leaveRecords.push(leaveRecord);
+            saveLeaveToStorage();
+            updateLeaveList();
+            
+            // Clear form
+            document.getElementById('leaveStaffSelect').value = '';
+            document.getElementById('leaveType').value = 'vacation';
+            document.getElementById('leaveNotes').value = '';
+        }
+
+        function updateLeaveList() {
+            const leaveList = document.getElementById('leaveList');
+            leaveList.innerHTML = '';
+
+            // Sort leave records by start date
+            const sortedRecords = [...leaveRecords].sort((a, b) => 
+                new Date(a.startDate) - new Date(b.startDate)
+            );
+
+            // Filter to show only current and future leave
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            sortedRecords.forEach((record, index) => {
+                const endDate = new Date(record.endDate);
+                endDate.setHours(0, 0, 0, 0);
+                
+                if (endDate >= today) {
+                    const div = document.createElement('div');
+                    div.className = 'leave-record';
+                    div.innerHTML = `
+                        <div style="border: 1px solid #ddd; padding: 10px; margin-bottom: 10px;">
+                            <strong>${record.staffName}</strong> - ${record.leaveType}<br>
+                            ${new Date(record.startDate).toLocaleDateString()} to 
+                            ${new Date(record.endDate).toLocaleDateString()}<br>
+                            ${record.notes ? `<em>${record.notes}</em><br>` : ''}
+                            <button onclick="deleteLeave(${index})">Delete</button>
+                        </div>
+                    `;
+                    leaveList.appendChild(div);
+                }
+            });
+
+            if (leaveList.children.length === 0) {
+                leaveList.innerHTML = '<p>No current or upcoming leave recorded.</p>';
+            }
+        }
+
+        function deleteLeave(index) {
+            if (confirm('Are you sure you want to delete this leave record?')) {
+                leaveRecords.splice(index, 1);
+                saveLeaveToStorage();
+                updateLeaveList();
+            }
+        }
+
+        // Daily Edit Functions
+        function showDayEditModal(date) {
+            editingDate = date;
+            const modal = document.getElementById('dayEditModal');
+            const dateStr = new Date(date).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('dayEditModalTitle').textContent = `Edit Shifts for ${dateStr}`;
+
+            // Populate staff dropdowns
+            const dropdowns = ['dayShiftStaff', 'nightShiftStaff', 'controlRoomStaff'];
+            dropdowns.forEach(id => populateStaffDropdown(id, date));
+
+            // Set current values
+            const dateKey = formatDateKey(date);
+            const dayAssignments = assignments[dateKey] || {};
+            
+            if (dayAssignments.Day) document.getElementById('dayShiftStaff').value = dayAssignments.Day;
+            if (dayAssignments.Night) document.getElementById('nightShiftStaff').value = dayAssignments.Night;
+            if (dayAssignments.ControlRoom) document.getElementById('controlRoomStaff').value = dayAssignments.ControlRoom;
+
+            updateTransportCrews(dateKey);
+            modal.style.display = 'block';
+        }
+
+        function populateStaffDropdown(dropdownId, date) {
+            const dropdown = document.getElementById(dropdownId);
+            dropdown.innerHTML = '<option value="">Select Staff Member</option>';
+            
+            const eligibleStaff = getEligibleStaff(people, new Date(date));
+            eligibleStaff.forEach(person => {
+                const option = document.createElement('option');
+                option.value = person.name;
+                option.textContent = person.name;
+                dropdown.appendChild(option);
+            });
+        }
+
+        function addTransportCrew(transportType) {
+            const dateKey = formatDateKey(editingDate);
+            
+            // Ensure assignments structure exists
+            if (!assignments[dateKey]) {
+                assignments[dateKey] = { Transports: [] };
+            }
+            
+            if (!assignments[dateKey].Transports) {
+                assignments[dateKey].Transports = [];
+            }
+
+            // Get limits from transportsConfig (the actual source of truth)
+            const limits = {
+                'Ambulance': transportsConfig.ambulance || 0,
+                'Medical Transport': transportsConfig.medical || 0
+            };
+
+            const currentCounts = {
+                'Ambulance': assignments[dateKey].Transports.filter(t => t.type === 'Ambulance').length,
+                'Medical Transport': assignments[dateKey].Transports.filter(t => t.type === 'Medical Transport').length
+            };
+
+            // Check if we can add more of this type
+            if (currentCounts[transportType] >= limits[transportType]) {
+                const message = `Cannot add more ${transportType}s. Maximum of ${limits[transportType]} allowed per day.\n\nCurrent: ${currentCounts[transportType]}, Limit: ${limits[transportType]}`;
+                alert(message);
+                return;
+            }
+
+            // Add new transport crew
+            const newCrew = {
+                type: transportType,
+                crew: { Doctor: '', Medic: '', Driver: '' }
+            };
+            
+            assignments[dateKey].Transports.push(newCrew);
+            saveAssignmentsToStorage(); // Save changes to localStorage
+            updateTransportCrews(dateKey); // Update the display
+        }
+
+        function updateTransportCrews(dateKey) {
+    const container = document.getElementById('transportAssignments');
+    if (!container) return;
+    
+    container.innerHTML = '';
+
+    if (!assignments[dateKey]) {
+        assignments[dateKey] = { Transports: [] };
+    }
+    
+    if (!assignments[dateKey].Transports) {
+        assignments[dateKey].Transports = [];
+    }
+
+    // Display each transport crew
+    assignments[dateKey].Transports.forEach((transport, index) => {
+        // Create container for this crew
+        const transportDiv = document.createElement('div');
+        transportDiv.className = 'transport-crew';
+        transportDiv.innerHTML = `
+            <h4>${transport.type}</h4>
+            <select id="transport-${index}-doctor" class="transport-staff" data-role="Doctor" data-index="${index}">
+                <option value="">Select Doctor</option>
+            </select>
+            <select id="transport-${index}-medic" class="transport-staff" data-role="Medic" data-index="${index}">
+                <option value="">Select Medic</option>
+            </select>
+            <select id="transport-${index}-driver" class="transport-staff" data-role="Driver" data-index="${index}">
+                <option value="">Select Driver</option>
+            </select>
+            <button onclick="removeTransportCrew(${index})" class="remove-button">Remove</button>
+        `;
+        container.appendChild(transportDiv);
+
+        // Populate dropdowns for this crew
+        ['doctor', 'medic', 'driver'].forEach(role => {
+            const select = document.getElementById(`transport-${index}-${role}`);
+            if (!select) return;
+
+            const staffRole = role.charAt(0).toUpperCase() + role.slice(1);
+            const eligibleStaff = getEligibleStaff(people, new Date(editingDate));
+            
+            select.options.length = 1; // Keep only the default option
+            
+            eligibleStaff.forEach(person => {
+                const option = document.createElement('option');
+                option.value = person.name;
+                option.textContent = person.name;
+                select.appendChild(option);
+            });
+            
+            if (transport.crew && transport.crew[staffRole]) {
+                select.value = transport.crew[staffRole];
+            }
+        });
+    });
+}
+        function removeTransportCrew(index) {
+            const dateKey = formatDateKey(editingDate);
+            assignments[dateKey].Transports.splice(index, 1);
+            updateTransportCrews(dateKey);
+        }
+
+        function saveDayEdits() {
+            const dateKey = formatDateKey(editingDate);
+            if (!assignments[dateKey]) {
+                assignments[dateKey] = { Transports: [] };
+            }
+
+            assignments[dateKey].Day = document.getElementById('dayShiftStaff').value;
+            assignments[dateKey].Night = document.getElementById('nightShiftStaff').value;
+            assignments[dateKey].ControlRoom = document.getElementById('controlRoomStaff').value;
+
+            saveAssignmentsToStorage();
+            updateCalendar();
+            closeDayEditModal();
+        }
+
+        function closeDayEditModal() {
+            document.getElementById('dayEditModal').style.display = 'none';
+            editingDate = null;
+        }
+
+        // Filter Functions
+        function showFilterModal() {
+            const modal = document.getElementById('filterModal');
+            const staffSelect = document.getElementById('filterStaff');
+            
+            // Populate staff select
+            staffSelect.innerHTML = '<option value="">All Staff Members</option>';
+            people.forEach(person => {
+                const option = document.createElement('option');
+                option.value = person.name;
+                option.textContent = person.name;
+                staffSelect.appendChild(option);
+            });
+
+            // Set current filter values
+            staffSelect.value = currentFilter.staffMember;
+            document.getElementById('filterShiftType').value = currentFilter.shiftType;
+            
+            modal.style.display = 'block';
+        }
+
+        function closeFilterModal() {
+            document.getElementById('filterModal').style.display = 'none';
+        }
+
+        function applyFilter() {
+            currentFilter.staffMember = document.getElementById('filterStaff').value;
+            currentFilter.shiftType = document.getElementById('filterShiftType').value;
+            updateCalendar();
+            closeFilterModal();
+        }
+
+        function clearFilter() {
+            currentFilter.staffMember = '';
+            currentFilter.shiftType = '';
+            document.getElementById('filterStaff').value = '';
+            document.getElementById('filterShiftType').value = '';
+            updateCalendar();
+            closeFilterModal();
+        }
+
+        function formatDateKey(date) {
+            const d = new Date(date);
+            return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+        }
+
+        function getEligibleStaff(staff, date, excludePerson = null) {
+            const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+            return staff.filter(person => {
+                // Check if person is excluded
+                if (excludePerson && person === excludePerson) return false;
+                
+                // Check weekdays only preference
+                if (person.availability.weekdaysOnly && isWeekend) return false;
+                
+                // Check if person is on leave
+                if (isPersonOnLeave(person.name, date)) return false;
+                
+                // Check rest period
+                if (person.lastShiftDate) {
+                    const daysSinceLastShift = Math.floor(
+                        (date - new Date(person.lastShiftDate)) / (1000 * 60 * 60 * 24)
+                    );
+                    if (daysSinceLastShift < person.availability.minRestDays) return false;
+                }
+                
+                return true;
+            });
+        }
+
+        function isPersonOnLeave(personName, date) {
+            const checkDate = new Date(date);
+            checkDate.setHours(0, 0, 0, 0);
+
+            return leaveRecords.some(record => {
+                const startDate = new Date(record.startDate);
+                const endDate = new Date(record.endDate);
+                startDate.setHours(0, 0, 0, 0);
+                endDate.setHours(0, 0, 0, 0);
+
+                return record.staffName === personName &&
+                    checkDate >= startDate &&
+                    checkDate <= endDate;
+            });
+        }
+
+        // Calendar navigation functions
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            updateCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            updateCalendar();
+        }
+
+        // Calendar rendering
+        function updateCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            // Update month display
+            const locale = currentLanguage === 'pl' ? 'pl-PL' : 'en-US';
+            document.getElementById('currentMonth').textContent = 
+                new Date(year, month).toLocaleDateString(locale, { month: 'long', year: 'numeric' });
+
+            // Clear existing calendar
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = '';
+
+            // Add day headers
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            
+            function formatShiftDisplay(assignments, dateKey) {
+                if (!assignments[dateKey]) return '';
+
+                let shiftInfo = [];
+                const shifts = assignments[dateKey];
+
+                // Filter by staff member if specified
+                const staffFilter = currentFilter.staffMember;
+                const shiftFilter = currentFilter.shiftType;
+
+                function addShift(role, name) {
+                    if (!name) return;
+                    if (staffFilter && staffFilter !== name) return;
+                    if (shiftFilter && shiftFilter !== role) return;
+                    shiftInfo.push(`${role}: ${name}`);
+                }
+
+                addShift('Day', shifts.Day);
+                addShift('Night', shifts.Night);
+                addShift('ControlRoom', shifts.ControlRoom);
+
+                if (shifts.Transports) {
+                    shifts.Transports.forEach(transport => {
+                        Object.entries(transport.crew).forEach(([role, name]) => {
+                            if (staffFilter && staffFilter !== name) return;
+                            if (shiftFilter && shiftFilter !== 'Transport') return;
+                            const transportTypeLabel = transport.type === 'Ambulance' ? t('ambulance') : t('medicalTransport');
+                            shiftInfo.push(`${transportTypeLabel} ${role}: ${name}`);
+                        });
+                    });
+                }
+
+                return shiftInfo.join('<br>');
+            }
+            const dayHeaders = translations[currentLanguage].days || days;
+            dayHeaders.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-header';
+                dayHeader.textContent = day;
+                calendar.appendChild(dayHeader);
+            });
+
+            // Get the first day of the month and number of days
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            // Add blank cells for days before the first of the month
+            for (let i = 0; i < firstDay; i++) {
+                const blankDay = document.createElement('div');
+                blankDay.className = 'calendar-day empty';
+                calendar.appendChild(blankDay);
+            }
+
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const currentDate = new Date(year, month, day);
+                const dayCell = document.createElement('div');
+                const currentDateKey = `${year}-${month + 1}-${day}`;
+                
+                // Set up classes
+                let classes = ['calendar-day'];
+                if (currentDate.getDay() === 0 || currentDate.getDay() === 6) classes.push('weekend');
+                
+                // Check if it's today
+                const today = new Date();
+                if (year === today.getFullYear() && 
+                    month === today.getMonth() && 
+                    day === today.getDate()) {
+                    classes.push('today');
+                }
+                dayCell.className = classes.join(' ');
+
+                // Add day number
+                const dayLabel = document.createElement('div');
+                dayLabel.className = 'day-number';
+                dayLabel.textContent = day;
+                dayCell.appendChild(dayLabel);
+
+                // Add shift info
+                const shiftInfo = document.createElement('div');
+                shiftInfo.className = 'shift-info';
+                shiftInfo.innerHTML = formatShiftDisplay(assignments, currentDateKey);
+                
+                // Apply visual indication for filtered results
+                if ((currentFilter.staffMember || currentFilter.shiftType) && shiftInfo.innerHTML) {
+                    dayCell.classList.add('filtered');
+                }
+                
+                dayCell.appendChild(shiftInfo);
+
+                // Add click handler
+                dayCell.onclick = () => showDayEditModal(currentDate);
+
+                // Add assignments if they exist
+                const dateKey = `${year}-${month + 1}-${day}`;
+                if (assignments[dateKey]) {
+                    if (assignments[dateKey].Day) {
+                        const dayShift = document.createElement('div');
+                        dayShift.className = 'assignment day';
+                        dayShift.textContent = `D: ${assignments[dateKey].Day}`;
+                        dayCell.appendChild(dayShift);
+                    }
+                    if (assignments[dateKey].Night) {
+                        const nightShift = document.createElement('div');
+                        nightShift.className = 'assignment night';
+                        nightShift.textContent = `N: ${assignments[dateKey].Night}`;
+                        dayCell.appendChild(nightShift);
+                    }
+                    if (assignments[dateKey].ControlRoom) {
+                        const controlShift = document.createElement('div');
+                        controlShift.className = 'assignment control';
+                        controlShift.textContent = `C: ${assignments[dateKey].ControlRoom}`;
+                        dayCell.appendChild(controlShift);
+                    }
+                    if (assignments[dateKey].Transports && assignments[dateKey].Transports.length) {
+                        assignments[dateKey].Transports.forEach(transport => {
+                            const transportDiv = document.createElement('div');
+                            transportDiv.className = `assignment ${transport.type === 'Ambulance' ? 'ambulance' : 'medical'}`;
+                            const crewText = Object.entries(transport.crew)
+                                .map(([role, name]) => {
+                                    // Translate role names
+                                    let translatedRole = role;
+                                    if (role === 'Doctor') translatedRole = t('doctor');
+                                    else if (role === 'Medic') translatedRole = t('medic');
+                                    else if (role === 'Driver') translatedRole = t('driver');
+                                    return `${name} (${translatedRole})`;
+                                })
+                                .join(', ');
+                            const transportTypeLabel = transport.type === 'Ambulance' ? t('ambulance') : t('medicalTransport');
+                            transportDiv.textContent = `${transportTypeLabel}: ${crewText}`;
+                            dayCell.appendChild(transportDiv);
+                        });
+                    }
+                }
+
+                calendar.appendChild(dayCell);
+            }
+        }
+
+        // Staff management functions
+        function loadPeopleFromStorage() {
+            const savedPeople = localStorage.getItem('people');
+            if (savedPeople) {
+                people = JSON.parse(savedPeople);
+                
+                // Migrate old data format to new format
+                people = people.map(person => {
+                    if (!person.employmentType || !person.roles) {
+                        return {
+                            ...person,
+                            employmentType: person.employmentType || 'unknown',
+                            roles: person.roles || (person.role ? [person.role] : []),
+                            availability: person.availability || {
+                                maxShiftsPerWeek: 4,
+                                minRestDays: 1
+                            }
+                        };
+                    }
+                    return person;
+                });
+                
+                // Save migrated data
+                savePeopleToStorage();
+            }
+            updateStaffTable();
+        }
+
+        function savePeopleToStorage() {
+            localStorage.setItem('people', JSON.stringify(people));
+        }
+
+        function loadAssignmentsFromStorage() {
+            const savedAssignments = localStorage.getItem('assignments');
+            if (savedAssignments) {
+                assignments = JSON.parse(savedAssignments);
+            }
+        }
+
+        function saveAssignmentsToStorage() {
+            localStorage.setItem('assignments', JSON.stringify(assignments));
+        }
+
+        function addPerson() {
+            const name = document.getElementById('newPersonName').value.trim();
+            const employmentType = document.getElementById('employmentType').value;
+            const roles = Array.from(document.getElementsByName('roles'))
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+
+            if (!name || !employmentType) {
+                alert('Please provide both name and employment type.');
+                return;
+            }
+
+            if (roles.length === 0) {
+                alert('Please select at least one role.');
+                return;
+            }
+
+            const maxShiftsPerWeek = parseInt(document.getElementById('maxShiftsPerWeek').value) || 4;
+            const minRestDays = parseInt(document.getElementById('minRestDays').value) || 1;
+            const weekdaysOnly = document.getElementById('weekdaysOnly').checked;
+            
+            people.push({ 
+                name,
+                employmentType,
+                roles,
+                availability: {
+                    maxShiftsPerWeek,
+                    minRestDays,
+                    weekdaysOnly
+                },
+                lastShift: null
+            });
+
+            savePeopleToStorage();
+            updateStaffTable();
+
+            // Reset form
+            document.getElementById('newPersonName').value = '';
+            document.getElementById('employmentType').value = '';
+            document.getElementsByName('roles').forEach(checkbox => checkbox.checked = false);
+            document.getElementById('maxShiftsPerWeek').value = '4';
+            document.getElementById('minRestDays').value = '1';
+        }
+
+        function removePerson(index) {
+            people.splice(index, 1);
+            savePeopleToStorage();
+            updateStaffTable();
+        }
+
+        function updateStaffTable() {
+            const tbody = document.getElementById('staffTableBody');
+            tbody.innerHTML = '';
+
+            people.forEach((person, index) => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = person.name;
+                row.insertCell(1).textContent = person.employmentType ? 
+                    (person.employmentType.charAt(0).toUpperCase() + person.employmentType.slice(1)) : 'Unknown';
+                row.insertCell(2).textContent = person.roles ? person.roles.join(', ') : 
+                    (person.role ? person.role : 'Unknown');
+                
+                // Add preferences cell
+                const preferences = [];
+                if (person.availability.weekdaysOnly) preferences.push('Weekdays only');
+                if (person.availability.maxShiftsPerWeek) preferences.push(`Max ${person.availability.maxShiftsPerWeek} shifts/week`);
+                if (person.availability.minRestDays) preferences.push(`${person.availability.minRestDays} rest day(s)`);
+                row.insertCell(3).textContent = preferences.join(', ');
+                
+                const actionsCell = row.insertCell(3);
+                
+                // Add Edit button
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Edit';
+                editButton.style.marginRight = '5px';
+                editButton.onclick = () => showEditPersonModal(index);
+                actionsCell.appendChild(editButton);
+
+                // Add Delete button
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Remove';
+                deleteButton.onclick = () => removePerson(index);
+                actionsCell.appendChild(deleteButton);
+
+                // Store searchable text for filtering
+                row.dataset.search = (
+                    (person.name || '') + ' ' + 
+                    (person.roles ? person.roles.join(' ') : (person.role || '')) + ' ' +
+                    (person.employmentType || '')
+                ).toLowerCase();
+            });
+
+            // Apply current search filter if any
+            filterStaffList();
+        }
+
+        function filterStaffList() {
+            const query = (document.getElementById('staffSearch') && document.getElementById('staffSearch').value || '').trim().toLowerCase();
+            const tbody = document.getElementById('staffTableBody');
+            if (!tbody) return;
+            Array.from(tbody.rows).forEach(row => {
+                if (!query) {
+                    row.style.display = '';
+                    return;
+                }
+                const text = row.dataset.search || row.textContent.toLowerCase();
+                row.style.display = text.indexOf(query) !== -1 ? '' : 'none';
+            });
+        }
+
+        // Modal management
+        function showStaffModal() {
+            document.getElementById('staffModal').style.display = 'block';
+        }
+
+        function closeStaffModal() {
+            document.getElementById('staffModal').style.display = 'none';
+        }
+
+        function showAssignmentModal() {
+            document.getElementById('assignmentModal').style.display = 'block';
+        }
+
+        function closeAssignmentModal() {
+            document.getElementById('assignmentModal').style.display = 'none';
+        }
+
+        // Shift assignment functions
+        function assignShiftsForCurrentMonth() {
+        function assignShiftsForCurrentMonth() {
+            function getStartOfWeek(date) {
+                const d = new Date(date);
+                const day = d.getDay();
+                const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+                return new Date(d.setDate(diff));
+            }
+
+            function updatePersonCounts(person, date, isWeekend) {
+                person.monthlyShifts = person.monthlyShifts || { total: 0, weekends: 0 };
+                person.monthlyShifts.total++;
+                if (isWeekend) person.monthlyShifts.weekends++;
+                person.weeklyShifts = (person.weeklyShifts || 0) + 1;
+                person.lastShiftDate = date.toISOString();
+            }
+
+            function filterAndSortPeople(people, date) {
+                return people.filter(person => {
+                    // Check weekly shift limit
+                    if (person.weeklyShifts >= person.availability.maxShiftsPerWeek) return false;
+                    return true;
+                }).sort((a, b) => {
+                    if (date.getDay() === 0 || date.getDay() === 6) {
+                        if (a.monthlyShifts.weekends !== b.monthlyShifts.weekends) {
+                            return a.monthlyShifts.weekends - b.monthlyShifts.weekends;
+                        }
+                    }
+                    return a.monthlyShifts.total - b.monthlyShifts.total;
+                });
+            }
+
+            try {
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                // Get staff with clinical roles
+                const clinicalStaff = people.filter(person => 
+                    person.roles.some(role => ['Doctor', 'MedicSenior', 'MedicTrainee'].includes(role))
+                );
+
+                if (clinicalStaff.length < 2) {
+                    throw new Error('Not enough clinical staff members to assign shifts!');
+                }
+
+                // Initialize assignments and reset staff counts
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateKey = `${year}-${month + 1}-${day}`;
+                    if (!assignments[dateKey]) {
+                        assignments[dateKey] = Object.create(null);
+                    }
+                    assignments[dateKey].Day = null;
+                    assignments[dateKey].Night = null;
+                    assignments[dateKey].ControlRoom = null;
+                    assignments[dateKey].Transports = [];
+                }
+
+                // Reset monthly and weekly counts
+                clinicalStaff.forEach(person => {
+                    person.monthlyShifts = { total: 0, weekends: 0 };
+                    person.weeklyShifts = 0;
+                    person.lastShiftDate = null;
+                });
+
+                // Assign shifts for each day
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const shiftDate = new Date(year, month, day);
+                    const dateKey = `${year}-${month + 1}-${day}`;
+                    const isWeekend = shiftDate.getDay() === 0 || shiftDate.getDay() === 6;
+
+                    // Get and assign day shift person
+                    let eligibleDay = getEligibleStaff(clinicalStaff, shiftDate);
+                    if (!eligibleDay.length) {
+                        clinicalStaff.forEach(p => p.weeklyShifts = 0);
+                        eligibleDay = clinicalStaff;
+                    }
+                    const dayPerson = eligibleDay[0];
+                    assignments[dateKey].Day = dayPerson.name;
+
+                    // Get and assign night shift person
+                    let eligibleNight = getEligibleStaff(clinicalStaff, shiftDate, dayPerson);
+                    if (!eligibleNight.length) {
+                        clinicalStaff.forEach(p => p.weeklyShifts = 0);
+                        eligibleNight = getEligibleStaff(clinicalStaff, shiftDate, dayPerson);
+                    }
+                    const nightPerson = eligibleNight[0];
+                    assignments[dateKey].Night = nightPerson.name;
+
+                    // Update counts for both people
+                    [dayPerson, nightPerson].forEach(person => {
+                        updatePersonCounts(person, shiftDate, isWeekend);
+                    });
+
+                    // Reset weekly counts at start of week
+                    if (shiftDate.getDay() === 0) {
+                        clinicalStaff.forEach(person => person.weeklyShifts = 0);
+                    }
+
+                    // Handle transport and control room assignments
+                    const ambulanceCount = transportsConfig.ambulance || 0;
+                    const medicalTransportCount = transportsConfig.medical || 0;
+
+                    // Get available staff excluding day/night shift staff
+                    const transportStaff = getEligibleStaff(people, shiftDate).filter(person =>
+                        person !== dayPerson && person !== nightPerson
+                    );
+
+                    // Assign control room staff first
+                    const controlStaff = transportStaff.find(p => p.roles.includes('ControlRoom'));
+                    if (controlStaff) {
+                        assignments[dateKey].ControlRoom = controlStaff.name;
+                        updatePersonCounts(controlStaff, shiftDate, isWeekend);
+                    }
+
+                    // Handle ambulance assignments
+                    for (let i = 0; i < ambulanceCount; i++) {
+                        const crew = {
+                            doctor: transportStaff.find(p => 
+                                p.roles.includes('Doctor') && 
+                                !assignments[dateKey].Transports.some(t => 
+                                    Object.values(t.crew).includes(p.name)
+                                )
+                            ),
+                            medic: transportStaff.find(p => 
+                                (p.roles.includes('MedicSenior') || p.roles.includes('MedicTrainee')) && 
+                                !assignments[dateKey].Transports.some(t => 
+                                    Object.values(t.crew).includes(p.name)
+                                )
+                            ),
+                            driver: transportStaff.find(p => 
+                                p.roles.includes('Driver') && 
+                                !assignments[dateKey].Transports.some(t => 
+                                    Object.values(t.crew).includes(p.name)
+                                )
+                            )
+                        };
+
+                        if (crew.doctor && crew.medic && crew.driver) {
+                            assignments[dateKey].Transports.push({
+                                type: 'Ambulance',
+                                crew: {
+                                    Doctor: crew.doctor.name,
+                                    Medic: crew.medic.name,
+                                    Driver: crew.driver.name
+                                }
+                            });
+
+                            Object.values(crew).forEach(person => {
+                                updatePersonCounts(person, shiftDate, isWeekend);
+                            });
+                        }
+                    }
+
+                    // Handle medical transport assignments
+                    for (let i = 0; i < medicalTransportCount; i++) {
+                        const crew = {
+                            medic: transportStaff.find(p => 
+                                (p.roles.includes('MedicSenior') || p.roles.includes('MedicTrainee')) && 
+                                !assignments[dateKey].Transports.some(t => 
+                                    Object.values(t.crew).includes(p.name)
+                                )
+                            ),
+                            transport: transportStaff.find(p => 
+                                p.roles.includes('Transport') && 
+                                !assignments[dateKey].Transports.some(t => 
+                                    Object.values(t.crew).includes(p.name)
+                                )
+                            ),
+                            driver: transportStaff.find(p => 
+                                p.roles.includes('Driver') && 
+                                !assignments[dateKey].Transports.some(t => 
+                                    Object.values(t.crew).includes(p.name)
+                                )
+                            )
+                        };
+
+                        if (crew.medic && crew.transport && crew.driver) {
+                            assignments[dateKey].Transports.push({
+                                type: 'MedicalTransport',
+                                crew: {
+                                    Medic: crew.medic.name,
+                                    Transport: crew.transport.name,
+                                    Driver: crew.driver.name
+                                }
+                            });
+
+                            Object.values(crew).forEach(person => {
+                                updatePersonCounts(person, shiftDate, isWeekend);
+                            });
+                        }
+                    }
+
+                    // Save assignments and reset counters as needed
+                    if (shiftDate.getDay() === 6) { // End of week
+                        people.forEach(person => person.weeklyShifts = 0);
+                    }
+
+                    saveAssignmentsToStorage();
+                }
+
+                // Update UI
+                updateCalendar();
+                const resultsDiv = document.getElementById('assignmentResults');
+                if (resultsDiv) {
+                    resultsDiv.textContent = `Configured transports — Ambulances/day: ${transportsConfig.ambulance}, Medical transports/day: ${transportsConfig.medical}`;
+                }
+
+                alert(`Shifts assigned for ${currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}!`);
+                return true;
+
+            } catch (error) {
+                console.error('Error assigning shifts:', error);
+                alert('An error occurred while assigning shifts: ' + error.message);
+                return false;
+            }
+        }
+            const drivers = staff.filter(p => p.roles.includes('Driver'));
+            const transports = staff.filter(p => p.roles.includes('Transport'));
+            const medics = staff.filter(p => 
+                p.roles.includes('MedicSenior') || p.roles.includes('MedicTrainee')
+            );
+
+            if (drivers.length && transports.length && medics.length) {
+                const crew = {
+                    driver: drivers[0],
+                    transport: transports[0],
+                    medic: medics[0]
+                };
+
+                assignments[dateKey].Transports.push({
+                    type: 'MedicalTransport',
+                    crew: {
+                        Driver: crew.driver.name,
+                        Transport: crew.transport.name,
+                        Medic: crew.medic.name
+                    }
+                });
+
+                Object.values(crew).forEach(person => {
+                    updatePersonCounts(person, date, isWeekend);
+                    staff.splice(staff.indexOf(person), 1);
+                });
+            }
+        }
+
+        // Edit staff functions
+        function showEditPersonModal(index) {
+            const person = people[index];
+            
+            // Fill the form with current values
+            document.getElementById('editPersonName').value = person.name;
+            document.getElementById('editEmploymentType').value = person.employmentType;
+            document.getElementById('editMaxShiftsPerWeek').value = person.availability.maxShiftsPerWeek;
+            document.getElementById('editMinRestDays').value = person.availability.minRestDays;
+            document.getElementById('editPersonIndex').value = index;
+
+            // Reset and set checkboxes
+            document.getElementsByName('editRoles').forEach(checkbox => {
+                checkbox.checked = person.roles.includes(checkbox.value);
+            });
+
+            // Show the modal
+            document.getElementById('editStaffModal').style.display = 'block';
+        }
+
+        function closeEditPersonModal() {
+            document.getElementById('editStaffModal').style.display = 'none';
+        }
+
+        function updatePerson() {
+            const index = parseInt(document.getElementById('editPersonIndex').value);
+            const name = document.getElementById('editPersonName').value.trim();
+            const employmentType = document.getElementById('editEmploymentType').value;
+            const roles = Array.from(document.getElementsByName('editRoles'))
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+
+            if (!name || !employmentType) {
+                alert('Please provide both name and employment type.');
+                return;
+            }
+
+            if (roles.length === 0) {
+                alert('Please select at least one role.');
+                return;
+            }
+
+            const maxShiftsPerWeek = parseInt(document.getElementById('editMaxShiftsPerWeek').value) || 4;
+            const minRestDays = parseInt(document.getElementById('editMinRestDays').value) || 1;
+
+            // Update the person object
+            people[index] = {
+                ...people[index],
+                name,
+                employmentType,
+                roles,
+                availability: {
+                    maxShiftsPerWeek,
+                    minRestDays
+                }
+            };
+
+            // Save changes and update display
+            savePeopleToStorage();
+            updateStaffTable();
+            closeEditPersonModal();
+        }
+
+        // Transports configuration (persisted)
+        let transportsConfig = { ambulance: 1, medical: 1 };
+
+        function loadTransportsFromStorage() {
+            try {
+                const saved = localStorage.getItem('transportsConfig');
+                if (saved) {
+                    transportsConfig = JSON.parse(saved);
+                }
+            } catch (e) {
+                console.error('Failed to load transportsConfig', e);
+            }
+
+            // Update UI inputs if present
+            const ambEl = document.getElementById('ambulanceCount');
+            const medEl = document.getElementById('medicalTransportCount');
+            if (ambEl) ambEl.value = transportsConfig.ambulance || 0;
+            if (medEl) medEl.value = transportsConfig.medical || 0;
+            // Also reflect in assignmentResults if present
+            const res = document.getElementById('assignmentResults');
+            if (res) res.textContent = `Configured transports — Ambulances/day: ${transportsConfig.ambulance}, Medical transports/day: ${transportsConfig.medical}`;
+        }
+
+        function saveTransportsToStorage() {
+            const amb = parseInt(document.getElementById('ambulanceCount').value) || 0;
+            const med = parseInt(document.getElementById('medicalTransportCount').value) || 0;
+            transportsConfig = { ambulance: amb, medical: med };
+            localStorage.setItem('transportsConfig', JSON.stringify(transportsConfig));
+            const res = document.getElementById('assignmentResults');
+            if (res) res.textContent = `Configured transports — Ambulances/day: ${transportsConfig.ambulance}, Medical transports/day: ${transportsConfig.medical}`;
+            alert('Transports configuration saved.');
+        }
+
+        // Export / Import functions
+        function exportData() {
+            const payload = {
+                people,
+                assignments,
+                transportsConfig
+            };
+            const dataStr = JSON.stringify(payload, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `shift_planner_export_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        function handleImportFile(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const obj = JSON.parse(evt.target.result);
+                    if (obj.people) people = obj.people;
+                    if (obj.assignments) assignments = obj.assignments;
+                    if (obj.transportsConfig) transportsConfig = obj.transportsConfig;
+                    savePeopleToStorage();
+                    saveAssignmentsToStorage();
+                    localStorage.setItem('transportsConfig', JSON.stringify(transportsConfig));
+                    loadTransportsFromStorage();
+                    updateCalendar();
+                    updateStaffTable();
+                    alert('Import successful.');
+                } catch (err) {
+                    alert('Import failed: invalid JSON');
+                }
+            };
+            reader.readAsText(file);
+            // reset input
+            e.target.value = '';
+        }
+
+        // Simple in-browser unit tests (run via Run Tests button)
+        function runAllTests() {
+            const results = [];
+
+            // Backup
+            const backupPeople = JSON.parse(JSON.stringify(people));
+            const backupAssignments = JSON.parse(JSON.stringify(assignments));
+            const backupTransports = JSON.parse(JSON.stringify(transportsConfig));
+
+            try {
+                // Test migration
+                localStorage.setItem('people', JSON.stringify([{ name: 'Old', role: 'doctor' }]));
+                loadPeopleFromStorage();
+                const migrated = people[0] && Array.isArray(people[0].roles) && people[0].employmentType;
+                results.push({ name: 'Migration test', ok: !!migrated });
+
+                // Test transports persistence
+                transportsConfig = { ambulance: 2, medical: 1 };
+                localStorage.setItem('transportsConfig', JSON.stringify(transportsConfig));
+                transportsConfig = { ambulance: 0, medical: 0 };
+                loadTransportsFromStorage();
+                results.push({ name: 'Transports persistence', ok: transportsConfig.ambulance === 2 && transportsConfig.medical === 1 });
+
+                // Test assignment respects transport slots
+                // Prepare minimal staff
+                people = [
+                    { name: 'D1', roles: ['Doctor'], availability: { maxShiftsPerWeek: 7, minRestDays: 0 } },
+                    { name: 'D2', roles: ['MedicSenior'], availability: { maxShiftsPerWeek: 7, minRestDays: 0 } },
+                    { name: 'T1', roles: ['Transport'], availability: { maxShiftsPerWeek: 7, minRestDays: 0 } },
+                    { name: 'T2', roles: ['Driver'], availability: { maxShiftsPerWeek: 7, minRestDays: 0 } }
+                ];
+                // ensure transports config small
+                transportsConfig = { ambulance: 1, medical: 0 };
+                // set currentDate to a stable month
+                const savedDate = new Date(currentDate);
+                currentDate = new Date(2025, 10, 1); // November 2025
+                assignments = {};
+                assignShiftsForCurrentMonth();
+                // Check every day assignments Transports length <= slots
+                let okAssign = true;
+                for (const k in assignments) {
+                    const tr = assignments[k].Transports || [];
+                    if (tr.length > (transportsConfig.ambulance + transportsConfig.medical)) okAssign = false;
+                }
+                results.push({ name: 'Assignment transport slot test', ok: okAssign });
+
+                // Restore date
+                currentDate = savedDate;
+
+            } catch (e) {
+                results.push({ name: 'Exception during tests', ok: false, error: String(e) });
+            }
+
+            // Restore backups
+            people = backupPeople;
+            assignments = backupAssignments;
+            transportsConfig = backupTransports;
+            savePeopleToStorage();
+            saveAssignmentsToStorage();
+            localStorage.setItem('transportsConfig', JSON.stringify(transportsConfig));
+            loadTransportsFromStorage();
+
+            // Show results
+            const okCount = results.filter(r => r.ok).length;
+            let msg = `Tests: ${okCount}/${results.length} passed\n`;
+            results.forEach(r => msg += `${r.ok ? '✔' : '✖'} ${r.name}${r.error ? ' - ' + r.error : ''}\n`);
+            alert(msg);
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>
